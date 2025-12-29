@@ -1,11 +1,14 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
-const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+const inter = Inter({ 
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+})
 
 export const metadata: Metadata = {
   title: "Restaurant POS System",
@@ -37,7 +40,7 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/restaurant-logo.png?v=2" />
         <link rel="icon" type="image/png" sizes="16x16" href="/restaurant-logo.png?v=2" />
       </head>
-      <body className={`font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased`}>
         {children}
         <Analytics />
       </body>
