@@ -72,7 +72,7 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
   }
 
   return (
-    <div className="flex w-full lg:w-[30%] flex-col bg-card border-l border-border h-full">
+    <div className="print-bill flex w-full lg:w-[30%] flex-col bg-card border-l border-border h-full">
       <div className="p-3 sm:p-4 border-b border-border flex-shrink-0">
         <h2 className="text-base sm:text-lg font-bold text-foreground">Bill Summary</h2>
       </div>
@@ -93,7 +93,7 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
                 <div className="flex-1 min-w-0">
                   <div className="text-xs sm:text-sm font-medium text-foreground truncate">{item.name}</div>
                   <div className="text-xs text-muted-foreground">
-                    ${item.price.toFixed(2)} × {item.quantity}
+                    LKR {item.price.toFixed(2)} × {item.quantity}
                   </div>
                 </div>
 
@@ -130,21 +130,21 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
       <div className="p-3 sm:p-4 border-t border-border space-y-2 sm:space-y-3 bg-muted/20 flex-shrink-0">
         <div className="flex justify-between text-xs sm:text-sm">
           <span className="text-muted-foreground">Subtotal:</span>
-          <span className="font-medium text-foreground">${bill.subtotal.toFixed(2)}</span>
+          <span className="font-medium text-foreground">LKR {bill.subtotal.toFixed(2)}</span>
         </div>
         <div className="flex justify-between text-xs sm:text-sm">
           <span className="text-muted-foreground">Tax:</span>
-          <span className="font-medium text-foreground">${bill.tax.toFixed(2)}</span>
+          <span className="font-medium text-foreground">LKR {bill.tax.toFixed(2)}</span>
         </div>
         {bill.discount > 0 && (
           <div className="flex justify-between text-xs sm:text-sm">
             <span className="text-muted-foreground">Discount:</span>
-            <span className="font-medium text-destructive">−${bill.discount.toFixed(2)}</span>
+            <span className="font-medium text-destructive">−LKR {bill.discount.toFixed(2)}</span>
           </div>
         )}
         <div className="flex justify-between text-base sm:text-lg font-bold pt-2 border-t border-border">
           <span className="text-foreground">Total:</span>
-          <span className="text-primary">${bill.total.toFixed(2)}</span>
+          <span className="text-primary">LKR {bill.total.toFixed(2)}</span>
         </div>
       </div>
 

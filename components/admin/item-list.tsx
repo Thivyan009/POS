@@ -71,7 +71,7 @@ export default function ItemList({ items, categories, onEdit, onDelete }: ItemLi
                 {getCategoryName(item.categoryId)}
               </TableCell>
               <TableCell className="text-right font-semibold text-xs sm:text-sm">
-                ${item.price.toFixed(2)}
+                LKR {item.price.toFixed(2)}
               </TableCell>
               <TableCell className="text-center hidden md:table-cell">
                 <Badge variant={item.tax ? "default" : "outline"} className="text-[10px]">

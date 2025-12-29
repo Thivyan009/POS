@@ -28,7 +28,7 @@ export default function RevenueCards({ data }: RevenueCardsProps) {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-foreground">
-              ${card.value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              LKR {card.value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
           </CardContent>
         </Card>

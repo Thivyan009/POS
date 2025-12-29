@@ -16,6 +16,7 @@ const transformMenuItem = (row: MenuItemRow) => ({
   categoryId: row.category_id,
   tax: row.tax,
   available: row.available,
+  imageUrl: row.image_url || null,
 })
 
 // Helper function to transform bill items
@@ -114,6 +115,7 @@ export const apiService = {
     categoryId: string
     tax: boolean
     available: boolean
+    imageUrl?: string | null
   }) => {
     try {
       const { data, error } = await supabase
@@ -125,6 +127,7 @@ export const apiService = {
             category_id: itemData.categoryId,
             tax: itemData.tax,
             available: itemData.available,
+            image_url: itemData.imageUrl || null,
           },
         ])
         .select()
@@ -146,6 +149,7 @@ export const apiService = {
       categoryId?: string
       tax?: boolean
       available?: boolean
+      imageUrl?: string | null
     },
   ) => {
     try {
@@ -155,6 +159,7 @@ export const apiService = {
       if (itemData.categoryId !== undefined) updateData.category_id = itemData.categoryId
       if (itemData.tax !== undefined) updateData.tax = itemData.tax
       if (itemData.available !== undefined) updateData.available = itemData.available
+      if (itemData.imageUrl !== undefined) updateData.image_url = itemData.imageUrl || null
 
       const { data, error } = await supabase
         .from("menu_items")
@@ -191,6 +196,7 @@ export const apiService = {
     discount: number
     total: number
     whatsappNumber?: string | null
+    createdBy?: string | null
   }) => {
     try {
       // First, create the bill
@@ -203,6 +209,7 @@ export const apiService = {
             discount: billData.discount,
             total: billData.total,
             whatsapp_number: billData.whatsappNumber || null,
+            created_by: billData.createdBy || null,
             status: "completed",
           },
         ])
@@ -241,7 +248,7 @@ export const apiService = {
     try {
       let query = supabase
         .from("bills")
-        .select("*")
+        .select("*", { count: "exact" })
         .order("created_at", { ascending: false })
         .range((page - 1) * limit, page * limit - 1)
 
@@ -269,8 +276,15 @@ export const apiService = {
 
           return {
             id: bill.id,
+            subtotal: Number(bill.subtotal),
+            tax: Number(bill.tax),
+            discount: Number(bill.discount),
             total: Number(bill.total),
-            createdAt: bill.created_at,
+            status: bill.status,
+            whatsapp_number: bill.whatsapp_number,
+            created_by: bill.created_by,
+            created_at: bill.created_at,
+            createdAt: bill.created_at, // Keep for backwards compatibility
             items: (items || []).map(transformBillItem),
           }
         }),
@@ -280,6 +294,7 @@ export const apiService = {
         bills: billsWithItems,
         total: count || 0,
         page,
+        limit,
       }
     } catch (error) {
       console.error("Error fetching bills:", error)
@@ -563,21 +578,13 @@ export const apiService = {
   // Discount Code APIs
   getDiscountCodes: async () => {
     try {
-      const { data, error } = await supabase
-        .from("discount_codes")
-        .select("*")
-        .order("created_at", { ascending: false })
-
-      if (error) throw error
-      return (data || []).map((code) => ({
-        id: code.id,
-        code: code.code,
-        discountPercent: Number(code.discount_percent),
-        description: code.description,
-        active: code.active,
-        createdAt: code.created_at,
-      }))
-    } catch (error) {
+      const response = await fetch("/api/discount-codes/list")
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || errorData.details || "Failed to fetch discount codes")
+      }
+      return await response.json()
+    } catch (error: any) {
       console.error("Error fetching discount codes:", error)
       throw error
     }
@@ -585,97 +592,89 @@ export const apiService = {
 
   createDiscountCode: async (codeData: { code: string; discountPercent: number; description?: string }) => {
     try {
-      const { data, error } = await supabase
-        .from("discount_codes")
-        .insert([
-          {
-            code: codeData.code,
-            discount_percent: codeData.discountPercent,
-            description: codeData.description || null,
-            active: true,
-          },
-        ])
-        .select()
-        .single()
+      const response = await fetch("/api/discount-codes/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(codeData),
+      })
 
-      if (error) throw error
-      return {
-        id: data.id,
-        code: data.code,
-        discountPercent: Number(data.discount_percent),
-        description: data.description,
-        active: data.active,
-        createdAt: data.created_at,
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        const errorMessage = errorData.error || errorData.details || "Failed to create discount code"
+        console.error("Error creating discount code:", errorMessage)
+        throw new Error(errorMessage)
       }
-    } catch (error) {
+
+      return await response.json()
+    } catch (error: any) {
       console.error("Error creating discount code:", error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error(error?.message || "Failed to create discount code")
     }
   },
 
   updateDiscountCode: async (id: string, data: { active?: boolean; discountPercent?: number; description?: string }) => {
     try {
-      const updateData: any = {}
-      if (data.active !== undefined) updateData.active = data.active
-      if (data.discountPercent !== undefined) updateData.discount_percent = data.discountPercent
-      if (data.description !== undefined) updateData.description = data.description
+      const response = await fetch("/api/discount-codes/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, ...data }),
+      })
 
-      const { data: updated, error } = await supabase
-        .from("discount_codes")
-        .update(updateData)
-        .eq("id", id)
-        .select()
-        .single()
-
-      if (error) throw error
-      return {
-        id: updated.id,
-        code: updated.code,
-        discountPercent: Number(updated.discount_percent),
-        description: updated.description,
-        active: updated.active,
-        createdAt: updated.created_at,
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        const errorMessage = errorData.error || errorData.details || "Failed to update discount code"
+        console.error("Error updating discount code:", errorMessage)
+        throw new Error(errorMessage)
       }
-    } catch (error) {
+
+      return await response.json()
+    } catch (error: any) {
       console.error("Error updating discount code:", error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error(error?.message || "Failed to update discount code")
     }
   },
 
   deleteDiscountCode: async (id: string) => {
     try {
-      const { error } = await supabase.from("discount_codes").delete().eq("id", id)
+      const response = await fetch(`/api/discount-codes/delete?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      })
 
-      if (error) throw error
-      return { success: true }
-    } catch (error) {
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        const errorMessage = errorData.error || errorData.details || "Failed to delete discount code"
+        console.error("Error deleting discount code:", errorMessage)
+        throw new Error(errorMessage)
+      }
+
+      return await response.json()
+    } catch (error: any) {
       console.error("Error deleting discount code:", error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error(error?.message || "Failed to delete discount code")
     }
   },
 
   validateDiscountCode: async (code: string) => {
     try {
-      const { data, error } = await supabase
-        .from("discount_codes")
-        .select("*")
-        .eq("code", code)
-        .eq("active", true)
-        .single()
-
-      if (error) {
-        // Not found or not active
+      const response = await fetch(`/api/discount-codes/validate?code=${encodeURIComponent(code)}`)
+      if (!response.ok) {
         return null
       }
-
-      return {
-        id: data.id,
-        code: data.code,
-        discountPercent: Number(data.discount_percent),
-        description: data.description,
-        active: data.active,
-        createdAt: data.created_at,
-      }
+      const data = await response.json()
+      return data || null
     } catch (error) {
       console.error("Error validating discount code:", error)
       return null

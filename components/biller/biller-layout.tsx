@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
 export default function BillerLayout() {
-  const { logout } = useAuth()
+  const { logout, getUser } = useAuth()
   const { toast } = useToast()
   const [categories, setCategories] = useState<any[]>([])
   const [items, setItems] = useState<any[]>([])
@@ -75,6 +75,9 @@ export default function BillerLayout() {
       setIsPrinting(true)
 
       try {
+        // Get current user for created_by field
+        const currentUser = getUser()
+        
         // Submit bill
         const billData = {
           items: bill.items,
@@ -83,6 +86,7 @@ export default function BillerLayout() {
           discount: bill.discount,
           total: bill.total,
           whatsappNumber: sendViaWhatsapp ? whatsappNumber : null,
+          createdBy: currentUser?.id || null,
         }
 
         const result = await apiService.createBill(billData)
@@ -125,7 +129,7 @@ export default function BillerLayout() {
         setIsPrinting(false)
       }
     },
-    [bill, toast, clearBill],
+    [bill, toast, clearBill, getUser],
   )
 
   useKeyboardShortcuts({
@@ -150,6 +154,29 @@ export default function BillerLayout() {
   }
 
   const filteredItems = selectedCategory ? items.filter((item) => item.categoryId === selectedCategory) : items
+
+  // Show message if no categories or items
+  if (categories.length === 0) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="text-center p-4">
+          <p className="text-lg font-semibold text-foreground mb-2">No menu categories found</p>
+          <p className="text-sm text-muted-foreground">Please add menu categories in the admin panel.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="text-center p-4">
+          <p className="text-lg font-semibold text-foreground mb-2">No menu items found</p>
+          <p className="text-sm text-muted-foreground">Please add menu items in the admin panel.</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-screen flex-col bg-background">
@@ -216,7 +243,7 @@ export default function BillerLayout() {
                   </Badge>
                 )}
                 {bill.total > 0 && (
-                  <span className="font-bold">${bill.total.toFixed(2)}</span>
+                  <span className="font-bold">LKR {bill.total.toFixed(2)}</span>
                 )}
               </span>
             </Button>

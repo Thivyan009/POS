@@ -26,7 +26,10 @@ export default function AdminDashboard() {
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({})
 
   useEffect(() => {
+    if (currentSection !== "overview") return
+
     const loadData = async () => {
+      setIsLoading(true)
       try {
         const [rev, sales, items] = await Promise.all([
           apiService.getRevenue(dateRange.from, dateRange.to),
@@ -48,7 +51,7 @@ export default function AdminDashboard() {
     }
 
     loadData()
-  }, [toast, dateRange])
+  }, [toast, dateRange, currentSection])
 
   return (
     <div className="flex h-screen flex-col bg-background">
@@ -83,7 +86,7 @@ export default function AdminDashboard() {
                       <TopItems items={topItems} />
                     </div>
                   </div>
-                  <RecentBills />
+                  <RecentBills dateRange={dateRange} />
                 </>
               )}
             </div>

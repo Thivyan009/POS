@@ -77,19 +77,16 @@ export default function MenuItemForm({ item, categories, onSave, onCancel }: Men
     e.preventDefault()
     if (!name.trim() || !price || !categoryId) return
 
-    // In production, upload image to server and get URL
-    let imageUrl = imagePreview
-    if (imageFile) {
-      // For now, we'll use the data URL. In production, upload to server/cloud storage
-      // const formData = new FormData()
-      // formData.append("image", imageFile)
-      // const response = await fetch("/api/upload", { method: "POST", body: formData })
-      // const data = await response.json()
-      // imageUrl = data.url
-      
-      // For demo purposes, we'll store the data URL
-      imageUrl = imagePreview
-    }
+    // Use the preview if available, otherwise keep the existing imageUrl
+    let imageUrl = imagePreview || item?.imageUrl || null
+    
+    // If a new file was uploaded, use the preview (data URL)
+    // In production, upload image to server and get URL:
+    // const formData = new FormData()
+    // formData.append("image", imageFile)
+    // const response = await fetch("/api/upload", { method: "POST", body: formData })
+    // const data = await response.json()
+    // imageUrl = data.url
 
     onSave({
       ...(item || {}),
@@ -100,15 +97,19 @@ export default function MenuItemForm({ item, categories, onSave, onCancel }: Men
       available,
       imageUrl,
     })
-    setName("")
-    setPrice("")
-    setCategoryId("")
-    setTax(true)
-    setAvailable(true)
-    setImagePreview(null)
-    setImageFile(null)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
+    
+    // Only reset form if creating new item
+    if (!item) {
+      setName("")
+      setPrice("")
+      setCategoryId("")
+      setTax(true)
+      setAvailable(true)
+      setImagePreview(null)
+      setImageFile(null)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
     }
   }
 

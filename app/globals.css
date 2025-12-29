@@ -150,4 +150,37 @@
       min-width: 44px;
     }
   }
+  
+  /* Print styles for bills */
+  @media print {
+    @page {
+      size: A4;
+      margin: 1cm;
+    }
+    
+    body * {
+      visibility: hidden;
+    }
+    
+    /* Show only bill summary when printing */
+    .print-bill,
+    .print-bill * {
+      visibility: visible;
+    }
+    
+    .print-bill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      padding: 20px;
+    }
+    
+    /* Hide non-essential elements */
+    button,
+    input,
+    .no-print {
+      display: none !important;
+    }
+  }
 }

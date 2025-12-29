@@ -64,7 +64,7 @@ export default function MenuSection({
               )}
               <div className="p-2.5 sm:p-3">
                 <div className="font-medium text-foreground text-sm sm:text-base line-clamp-2">{item.name}</div>
-                <div className="text-base sm:text-lg font-bold text-primary mt-1.5 sm:mt-2">${item.price.toFixed(2)}</div>
+                <div className="text-base sm:text-lg font-bold text-primary mt-1.5 sm:mt-2">LKR {item.price.toFixed(2)}</div>
                 {!item.available && <div className="text-xs text-muted-foreground mt-1">Out of Stock</div>}
               </div>
             </button>

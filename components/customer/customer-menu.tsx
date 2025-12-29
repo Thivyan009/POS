@@ -131,7 +131,7 @@ export default function CustomerMenu({
                       </h3>
                       <div className="flex items-center justify-between">
                         <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary">
-                          ${item.price.toFixed(2)}
+                          LKR {item.price.toFixed(2)}
                         </div>
                       </div>
                     </div>

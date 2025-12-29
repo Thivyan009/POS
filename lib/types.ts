@@ -14,6 +14,7 @@ export interface MenuItem {
   category_id: string
   tax: boolean
   available: boolean
+  image_url?: string | null
   created_at?: string
   updated_at?: string
 }
@@ -73,6 +74,7 @@ export interface MenuItemRow {
   category_id: string
   tax: boolean
   available: boolean
+  image_url?: string | null
   created_at?: string
   updated_at?: string
 }

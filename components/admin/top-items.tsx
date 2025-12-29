@@ -7,6 +7,21 @@ interface TopItemsProps {
 }
 
 export default function TopItems({ items }: TopItemsProps) {
+  if (!items || items.length === 0) {
+    return (
+      <Card>
+        <CardHeader className="p-3 sm:p-6">
+          <CardTitle className="text-base sm:text-lg">Top Selling Items</CardTitle>
+        </CardHeader>
+        <CardContent className="p-3 sm:p-6">
+          <div className="flex items-center justify-center h-48 sm:h-64">
+            <p className="text-sm text-muted-foreground">No items sold yet</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   const maxCount = Math.max(...items.map((i) => i.count), 1)
 
   return (

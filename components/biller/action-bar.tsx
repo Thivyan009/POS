@@ -76,7 +76,7 @@ export default function ActionBar({ bill, onSubmit, onCancel, isSubmitting = fal
             {isSubmitting ? "Printing..." : "PRINT & SEND"}
           </Button>
           <Button
-            onClick={handleSubmit}
+            onClick={() => onSubmit("", false)}
             disabled={bill.items.length === 0 || isSubmitting}
             variant="outline"
             className="w-full sm:min-w-[120px] font-bold bg-transparent h-10 text-sm sm:text-base"

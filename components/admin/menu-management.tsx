@@ -87,6 +87,7 @@ export default function MenuManagement() {
           categoryId: item.categoryId,
           tax: item.tax,
           available: item.available,
+          imageUrl: item.imageUrl || null,
         })
         setItems(items.map((i) => (i.id === updated.id ? updated : i)))
         toast({ title: "Success", description: "Item updated" })
@@ -97,6 +98,7 @@ export default function MenuManagement() {
           categoryId: item.categoryId,
           tax: item.tax,
           available: item.available,
+          imageUrl: item.imageUrl || null,
         })
         setItems([...items, newItem])
         toast({ title: "Success", description: "Item added" })

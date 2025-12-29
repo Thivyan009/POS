@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS menu_items (
   category_id UUID NOT NULL REFERENCES menu_categories(id) ON DELETE CASCADE,
   tax BOOLEAN DEFAULT true,
   available BOOLEAN DEFAULT true,
+  image_url TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

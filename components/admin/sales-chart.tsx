@@ -7,6 +7,21 @@ interface SalesChartProps {
 }
 
 export default function SalesChart({ data }: SalesChartProps) {
+  if (!data || data.length === 0) {
+    return (
+      <Card>
+        <CardHeader className="p-3 sm:p-6">
+          <CardTitle className="text-base sm:text-lg">Sales by Hour</CardTitle>
+        </CardHeader>
+        <CardContent className="p-3 sm:p-6">
+          <div className="flex items-center justify-center h-48 sm:h-64">
+            <p className="text-sm text-muted-foreground">No sales data available</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   const maxSales = Math.max(...data.map((d) => d.sales), 1)
 
   return (
