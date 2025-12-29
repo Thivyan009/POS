@@ -177,9 +177,9 @@ export default function BillerLayout() {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative z-10">
         {/* Left Panel - Menu (Full width on mobile, 70% on desktop) */}
-        <div className="flex-1 lg:flex-none lg:w-[70%] flex flex-col overflow-hidden">
+        <div className="flex-1 lg:flex-none lg:w-[70%] flex flex-col overflow-hidden relative z-10">
           <MenuSection
             categories={categories}
             items={filteredItems}
@@ -201,11 +201,11 @@ export default function BillerLayout() {
       </div>
 
       {/* Mobile Bill Summary Button - Only visible on mobile */}
-      <div className="lg:hidden fixed bottom-[200px] sm:bottom-[100px] left-0 right-0 px-3 sm:px-4 z-40">
+      <div className="lg:hidden fixed bottom-[200px] sm:bottom-[100px] left-0 right-0 px-3 sm:px-4 z-30 pointer-events-none">
         <Sheet>
           <SheetTrigger asChild>
             <Button 
-              className="w-full bg-primary text-primary-foreground font-bold shadow-lg h-12 sm:h-14 text-sm sm:text-base"
+              className="w-full bg-primary text-primary-foreground font-bold shadow-lg h-12 sm:h-14 text-sm sm:text-base pointer-events-auto"
               size="lg"
             >
               <span className="flex items-center justify-center gap-2">
