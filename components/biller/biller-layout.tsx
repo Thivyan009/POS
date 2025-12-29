@@ -201,7 +201,7 @@ export default function BillerLayout() {
       </div>
 
       {/* Mobile Bill Summary Button - Only visible on mobile */}
-      <div className="lg:hidden fixed bottom-24 sm:bottom-28 left-0 right-0 px-3 sm:px-4 z-40">
+      <div className="lg:hidden fixed bottom-[200px] sm:bottom-[100px] left-0 right-0 px-3 sm:px-4 z-40">
         <Sheet>
           <SheetTrigger asChild>
             <Button 
@@ -233,7 +233,9 @@ export default function BillerLayout() {
       </div>
 
       {/* Bottom Action Bar */}
-      <ActionBar bill={bill} onSubmit={handleSubmitBill} onCancel={clearBill} isSubmitting={isPrinting} />
+      <div className="sticky bottom-0 z-50 bg-background">
+        <ActionBar bill={bill} onSubmit={handleSubmitBill} onCancel={clearBill} isSubmitting={isPrinting} />
+      </div>
     </div>
   )
 }
