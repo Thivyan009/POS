@@ -98,13 +98,11 @@ export default function CustomerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <CustomerMenu
-        categories={categories}
-        items={filteredItems}
-        selectedCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
-      />
-    </div>
+    <CustomerMenu
+      categories={categories}
+      items={filteredItems}
+      selectedCategory={selectedCategory}
+      onSelectCategory={setSelectedCategory}
+    />
   )
 }
