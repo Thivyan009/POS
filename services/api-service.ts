@@ -66,46 +66,80 @@ export const apiService = {
   // Menu Management APIs
   createMenuCategory: async (categoryData: { name: string }) => {
     try {
-      const { data, error } = await supabase
-        .from("menu_categories")
-        .insert([{ name: categoryData.name }])
-        .select()
-        .single()
+      const response = await fetch("/api/menu-categories/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(categoryData),
+      })
 
-      if (error) throw error
-      return transformCategory(data)
-    } catch (error) {
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        const errorMessage = errorData.error || errorData.details || "Failed to create menu category"
+        console.error("Error creating menu category:", errorMessage)
+        throw new Error(errorMessage)
+      }
+
+      const data = await response.json()
+      return { id: data.id, name: data.name }
+    } catch (error: any) {
       console.error("Error creating menu category:", error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error(error?.message || "Failed to create menu category")
     }
   },
 
   updateMenuCategory: async (id: string, categoryData: { name: string }) => {
     try {
-      const { data, error } = await supabase
-        .from("menu_categories")
-        .update({ name: categoryData.name })
-        .eq("id", id)
-        .select()
-        .single()
+      const response = await fetch("/api/menu-categories/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, ...categoryData }),
+      })
 
-      if (error) throw error
-      return transformCategory(data)
-    } catch (error) {
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        const errorMessage = errorData.error || errorData.details || "Failed to update menu category"
+        console.error("Error updating menu category:", errorMessage)
+        throw new Error(errorMessage)
+      }
+
+      const data = await response.json()
+      return { id: data.id, name: data.name }
+    } catch (error: any) {
       console.error("Error updating menu category:", error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error(error?.message || "Failed to update menu category")
     }
   },
 
   deleteMenuCategory: async (id: string) => {
     try {
-      const { error } = await supabase.from("menu_categories").delete().eq("id", id)
+      const response = await fetch(`/api/menu-categories/delete?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      })
 
-      if (error) throw error
-      return { success: true }
-    } catch (error) {
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        const errorMessage = errorData.error || errorData.details || "Failed to delete menu category"
+        console.error("Error deleting menu category:", errorMessage)
+        throw new Error(errorMessage)
+      }
+
+      return await response.json()
+    } catch (error: any) {
       console.error("Error deleting menu category:", error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error(error?.message || "Failed to delete menu category")
     }
   },
 
@@ -118,26 +152,37 @@ export const apiService = {
     imageUrl?: string | null
   }) => {
     try {
-      const { data, error } = await supabase
-        .from("menu_items")
-        .insert([
-          {
-            name: itemData.name,
-            price: itemData.price,
-            category_id: itemData.categoryId,
-            tax: itemData.tax,
-            available: itemData.available,
-            image_url: itemData.imageUrl || null,
-          },
-        ])
-        .select()
-        .single()
+      const response = await fetch("/api/menu-items/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(itemData),
+      })
 
-      if (error) throw error
-      return transformMenuItem(data)
-    } catch (error) {
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        const errorMessage = errorData.error || errorData.details || "Failed to create menu item"
+        console.error("Error creating menu item:", errorMessage)
+        throw new Error(errorMessage)
+      }
+
+      const data = await response.json()
+      return {
+        id: data.id,
+        name: data.name,
+        price: data.price,
+        categoryId: data.categoryId,
+        tax: data.tax,
+        available: data.available,
+        imageUrl: data.imageUrl || null,
+      }
+    } catch (error: any) {
       console.error("Error creating menu item:", error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error(error?.message || "Failed to create menu item")
     }
   },
 
@@ -153,38 +198,60 @@ export const apiService = {
     },
   ) => {
     try {
-      const updateData: any = {}
-      if (itemData.name !== undefined) updateData.name = itemData.name
-      if (itemData.price !== undefined) updateData.price = itemData.price
-      if (itemData.categoryId !== undefined) updateData.category_id = itemData.categoryId
-      if (itemData.tax !== undefined) updateData.tax = itemData.tax
-      if (itemData.available !== undefined) updateData.available = itemData.available
-      if (itemData.imageUrl !== undefined) updateData.image_url = itemData.imageUrl || null
+      const response = await fetch("/api/menu-items/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, ...itemData }),
+      })
 
-      const { data, error } = await supabase
-        .from("menu_items")
-        .update(updateData)
-        .eq("id", id)
-        .select()
-        .single()
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        const errorMessage = errorData.error || errorData.details || "Failed to update menu item"
+        console.error("Error updating menu item:", errorMessage)
+        throw new Error(errorMessage)
+      }
 
-      if (error) throw error
-      return transformMenuItem(data)
-    } catch (error) {
+      const data = await response.json()
+      return {
+        id: data.id,
+        name: data.name,
+        price: data.price,
+        categoryId: data.categoryId,
+        tax: data.tax,
+        available: data.available,
+        imageUrl: data.imageUrl || null,
+      }
+    } catch (error: any) {
       console.error("Error updating menu item:", error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error(error?.message || "Failed to update menu item")
     }
   },
 
   deleteMenuItem: async (id: string) => {
     try {
-      const { error } = await supabase.from("menu_items").delete().eq("id", id)
+      const response = await fetch(`/api/menu-items/delete?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      })
 
-      if (error) throw error
-      return { success: true }
-    } catch (error) {
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        const errorMessage = errorData.error || errorData.details || "Failed to delete menu item"
+        console.error("Error deleting menu item:", errorMessage)
+        throw new Error(errorMessage)
+      }
+
+      return await response.json()
+    } catch (error: any) {
       console.error("Error deleting menu item:", error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error(error?.message || "Failed to delete menu item")
     }
   },
 
