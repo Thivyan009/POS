@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import Image from "next/image"
 import {
   Table,
   TableBody,
@@ -36,7 +37,7 @@ export default function ItemList({ items, categories, onEdit, onDelete }: ItemLi
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-xs sm:text-sm">Name</TableHead>
+            <TableHead className="text-xs sm:text-sm">Item</TableHead>
             <TableHead className="text-xs sm:text-sm hidden sm:table-cell">Category</TableHead>
             <TableHead className="text-right text-xs sm:text-sm">Price</TableHead>
             <TableHead className="text-center text-xs sm:text-sm hidden md:table-cell">Tax</TableHead>
@@ -48,8 +49,23 @@ export default function ItemList({ items, categories, onEdit, onDelete }: ItemLi
           {items.map((item) => (
             <TableRow key={item.id}>
               <TableCell className="font-medium text-xs sm:text-sm">
-                <div>{item.name}</div>
-                <div className="text-muted-foreground text-[10px] sm:hidden mt-0.5">{getCategoryName(item.categoryId)}</div>
+                <div className="flex items-center gap-2 sm:gap-3">
+                  {item.imageUrl && (
+                    <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-md overflow-hidden bg-muted flex-shrink-0">
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                        unoptimized={item.imageUrl.startsWith("data:")}
+                      />
+                    </div>
+                  )}
+                  <div>
+                    <div>{item.name}</div>
+                    <div className="text-muted-foreground text-[10px] sm:hidden mt-0.5">{getCategoryName(item.categoryId)}</div>
+                  </div>
+                </div>
               </TableCell>
               <TableCell className="text-muted-foreground text-xs sm:text-sm hidden sm:table-cell">
                 {getCategoryName(item.categoryId)}

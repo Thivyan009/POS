@@ -11,6 +11,7 @@ export default function AdminNav({ currentSection, onSelectSection }: AdminNavPr
     { id: "menu", label: "Menu", icon: "🍽️" },
     { id: "users", label: "Users", icon: "👥" },
     { id: "bills", label: "Bills", icon: "🧾" },
+    { id: "discounts", label: "Discounts", icon: "🎫" },
   ]
 
   return (

@@ -12,16 +12,20 @@ import {
 import { useEffect, useState } from "react"
 import { apiService } from "@/services/api-service"
 
-export default function RecentBills() {
+interface RecentBillsProps {
+  dateRange?: { from?: Date; to?: Date }
+}
+
+export default function RecentBills({ dateRange }: RecentBillsProps) {
   const [bills, setBills] = useState([])
 
   useEffect(() => {
     const loadBills = async () => {
-      const result = await apiService.getBills(1, 10)
+      const result = await apiService.getBills(1, 50, dateRange?.from, dateRange?.to)
       setBills(result.bills)
     }
     loadBills()
-  }, [])
+  }, [dateRange])
 
   return (
     <Card>

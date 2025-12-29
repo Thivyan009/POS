@@ -4,6 +4,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
+import { apiService } from "@/services/api-service"
+import { useToast } from "@/hooks/use-toast"
+import { CheckCircle2, XCircle } from "lucide-react"
 
 interface BillSummaryProps {
   bill: any
@@ -13,14 +16,59 @@ interface BillSummaryProps {
 }
 
 export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onApplyDiscount }: BillSummaryProps) {
+  const { toast } = useToast()
   const [discountInput, setDiscountInput] = useState("")
+  const [discountCodeInput, setDiscountCodeInput] = useState("")
+  const [appliedDiscountCode, setAppliedDiscountCode] = useState<any>(null)
+  const [isValidatingCode, setIsValidatingCode] = useState(false)
 
   const handleApplyDiscount = () => {
     const amount = Number.parseFloat(discountInput)
     if (!isNaN(amount) && amount > 0) {
       onApplyDiscount(amount)
       setDiscountInput("")
+      setAppliedDiscountCode(null)
+      setDiscountCodeInput("")
     }
+  }
+
+  const handleApplyDiscountCode = async () => {
+    if (!discountCodeInput.trim()) return
+
+    setIsValidatingCode(true)
+    try {
+      const discountCode = await apiService.validateDiscountCode(discountCodeInput.trim())
+      if (discountCode) {
+        const discountAmount = (bill.subtotal + bill.tax) * (discountCode.discountPercent / 100)
+        onApplyDiscount(discountAmount)
+        setAppliedDiscountCode(discountCode)
+        setDiscountCodeInput("")
+        toast({
+          title: "Discount applied!",
+          description: `${discountCode.discountPercent}% discount applied`,
+        })
+      } else {
+        toast({
+          title: "Invalid code",
+          description: "The discount code is invalid or expired",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to validate discount code",
+        variant: "destructive",
+      })
+    } finally {
+      setIsValidatingCode(false)
+    }
+  }
+
+  const handleRemoveDiscountCode = () => {
+    setAppliedDiscountCode(null)
+    setDiscountCodeInput("")
+    onApplyDiscount(0)
   }
 
   return (
@@ -100,23 +148,87 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
         </div>
       </div>
 
-      {/* Discount Input */}
+      {/* Discount Code Input */}
       {bill.items.length > 0 && (
-        <div className="p-3 sm:p-4 border-t border-border flex-shrink-0">
+        <div className="p-3 sm:p-4 border-t border-border flex-shrink-0 space-y-2">
+          {appliedDiscountCode ? (
+            <div className="flex items-center justify-between p-2 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <div>
+                  <p className="text-xs sm:text-sm font-medium text-green-900 dark:text-green-100">
+                    {appliedDiscountCode.code} - {appliedDiscountCode.discountPercent}% OFF
+                  </p>
+                  {appliedDiscountCode.description && (
+                    <p className="text-xs text-green-700 dark:text-green-300">
+                      {appliedDiscountCode.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100"
+                onClick={handleRemoveDiscountCode}
+              >
+                <XCircle className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                placeholder="Enter discount code"
+                value={discountCodeInput}
+                onChange={(e) => setDiscountCodeInput(e.target.value.toUpperCase())}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleApplyDiscountCode()
+                  }
+                }}
+                className="h-9 sm:h-9 text-sm flex-1 font-mono"
+                disabled={isValidatingCode}
+              />
+              <Button
+                onClick={handleApplyDiscountCode}
+                size="sm"
+                variant="outline"
+                className="flex-shrink-0"
+                disabled={isValidatingCode || !discountCodeInput.trim()}
+              >
+                {isValidatingCode ? "..." : "Apply"}
+              </Button>
+            </div>
+          )}
+
+          {/* Manual Discount Input */}
           <div className="flex gap-2">
             <Input
               type="number"
-              placeholder="Discount"
+              placeholder="Manual discount amount"
               value={discountInput}
               onChange={(e) => setDiscountInput(e.target.value)}
               className="h-9 sm:h-9 text-sm flex-1"
               min="0"
               step="0.01"
+              disabled={!!appliedDiscountCode}
             />
-            <Button onClick={handleApplyDiscount} size="sm" variant="outline" className="flex-shrink-0">
+            <Button
+              onClick={handleApplyDiscount}
+              size="sm"
+              variant="outline"
+              className="flex-shrink-0"
+              disabled={!!appliedDiscountCode}
+            >
               Apply
             </Button>
           </div>
+          {appliedDiscountCode && (
+            <p className="text-xs text-muted-foreground">
+              Remove discount code to apply manual discount
+            </p>
+          )}
         </div>
       )}
     </div>

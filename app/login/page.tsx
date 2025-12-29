@@ -9,91 +9,115 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
+import { authService } from "@/services/auth-service"
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string>("")
   const router = useRouter()
   const { toast } = useToast()
-  const usernameInputRef = useRef<HTMLInputElement>(null)
+  const emailInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    usernameInputRef.current?.focus()
+    emailInputRef.current?.focus()
   }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!email || !password) {
+      const msg = "Please enter both email and password."
+      setErrorMessage(msg)
+      toast({
+        title: "Error",
+        description: msg,
+        variant: "destructive",
+      })
+      return
+    }
+
+    setErrorMessage("")
     setIsLoading(true)
 
     try {
-      // Simulate API call - In production, call your backend
-      // For now, mock authentication based on username
-      const role = username === "admin" ? "admin" : "biller"
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      })
 
-      // In production, validate with backend first
-      localStorage.setItem("pos-token", `token-${Date.now()}`)
-      localStorage.setItem("pos-role", role)
-      localStorage.setItem("pos-username", username)
+      const data = await response.json()
+
+      if (!response.ok) {
+        // Check if migration is needed
+        if (data.migrationNeeded) {
+          toast({
+            title: "Database Migration Required",
+            description: data.details || "Please run the migration SQL in Supabase SQL Editor.",
+            variant: "destructive",
+            duration: 15000,
+          })
+          // Show migration instructions
+          setTimeout(() => {
+            if (confirm("Database migration is required. Would you like to open the setup page for instructions?")) {
+              window.open("/admin/setup", "_blank")
+            }
+          }, 500)
+          setIsLoading(false)
+          return
+        }
+
+        // Display error message
+        const errorMsg = data.error || "Invalid email or password. Please try again."
+        setErrorMessage(errorMsg)
+        toast({
+          title: "Login Failed",
+          description: errorMsg,
+          variant: "destructive",
+          duration: 5000,
+        })
+        
+        // Clear password field on error for security
+        setPassword("")
+        setIsLoading(false)
+        return
+      }
+
+      const user = data as { id: string; email: string; role: "admin" | "biller"; enabled: boolean }
+
+      // Set user session
+      authService.setSession(user)
 
       toast({
         title: "Success",
-        description: `Welcome, ${username}!`,
+        description: `Welcome, ${user.email}!`,
       })
 
       // Redirect based on role
-      if (role === "admin") {
+      if (user.role === "admin") {
         router.push("/admin/dashboard")
       } else {
         router.push("/biller")
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Login error:", error)
+      const errorMsg = error?.message || "An error occurred. Please check your credentials and try again."
+      setErrorMessage(errorMsg)
       toast({
-        title: "Error",
-        description: "Login failed. Please try again.",
+        title: "Login Failed",
+        description: errorMsg,
         variant: "destructive",
+        duration: 5000,
       })
+      // Clear password field on error
+      setPassword("")
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const handleQuickLogin = async (role: "admin" | "biller") => {
-    setIsLoading(true)
-
-    try {
-      const username = role === "admin" ? "admin" : "biller"
-      
-      localStorage.setItem("pos-token", `token-${Date.now()}`)
-      localStorage.setItem("pos-role", role)
-      localStorage.setItem("pos-username", username)
-
-      toast({
-        title: "Success",
-        description: `Logged in as ${role}`,
-      })
-
-      if (role === "admin") {
-        router.push("/admin/dashboard")
-      } else {
-        router.push("/biller")
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Login failed. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem("pos-token")
-    localStorage.removeItem("pos-role")
-    localStorage.removeItem("pos-username")
-    router.push("/login")
   }
 
   return (
@@ -114,56 +138,22 @@ export default function LoginPage() {
           <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2 text-center">Restaurant POS</h1>
           <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6 text-center">Sign in to your account</p>
 
-          {/* Quick Login Buttons for Testing */}
-          <div className="mb-4 sm:mb-6 space-y-2">
-            <p className="text-xs text-muted-foreground mb-2 font-medium">Quick Login (Testing Only):</p>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                type="button"
-                onClick={() => handleQuickLogin("admin")}
-                disabled={isLoading}
-                variant="outline"
-                className="w-full text-xs sm:text-sm"
-              >
-                Login as Admin
-              </Button>
-              <Button
-                type="button"
-                onClick={() => handleQuickLogin("biller")}
-                disabled={isLoading}
-                variant="outline"
-                className="w-full text-xs sm:text-sm"
-              >
-                Login as Biller
-              </Button>
-            </div>
-          </div>
-
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or</span>
-            </div>
-          </div>
-
           <form onSubmit={handleLogin} className="space-y-3 sm:space-y-4">
             <div>
-              <label htmlFor="username" className="block text-xs sm:text-sm font-medium text-foreground mb-1">
-                Username
+              <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-foreground mb-1">
+                Email
               </label>
               <Input
-                ref={usernameInputRef}
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter username"
+                ref={emailInputRef}
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
                 disabled={isLoading}
                 className="text-sm sm:text-base h-10 sm:h-11"
+                autoComplete="email"
               />
-              <p className="text-xs text-muted-foreground mt-1">Try 'admin' for admin access</p>
             </div>
 
             <div>
@@ -174,21 +164,39 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  // Clear error when user starts typing
+                  if (errorMessage) setErrorMessage("")
+                }}
+                placeholder="Enter your password"
                 disabled={isLoading}
-                className="text-sm sm:text-base h-10 sm:h-11"
+                className={`text-sm sm:text-base h-10 sm:h-11 ${errorMessage ? "border-destructive" : ""}`}
+                autoComplete="current-password"
               />
+              {errorMessage && (
+                <p className="mt-1.5 text-xs text-destructive font-medium">
+                  {errorMessage}
+                </p>
+              )}
             </div>
 
-            <Button type="submit" className="w-full h-10 sm:h-11 text-sm sm:text-base" disabled={isLoading || !username || !password}>
+            <Button type="submit" className="w-full h-10 sm:h-11 text-sm sm:text-base" disabled={isLoading || !email || !password}>
               {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-border">
+          <div className="mt-6 pt-6 border-t border-border space-y-3">
+            <Button
+              type="button"
+              onClick={() => router.push("/customer")}
+              variant="outline"
+              className="w-full h-10 sm:h-11 text-sm sm:text-base"
+            >
+              🍽️ View Menu (No Login Required)
+            </Button>
             <p className="text-xs text-muted-foreground text-center">
-              Demo credentials: username (any), password (any)
+              Default admin: paruthimunaitech@gmail.com
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 "use client"
 
 import { ScrollArea } from "@/components/ui/scroll-area"
+import Image from "next/image"
 
 interface MenuSectionProps {
   categories: any[]
@@ -44,15 +45,28 @@ export default function MenuSection({
               key={item.id}
               onClick={() => onAddItem(item)}
               disabled={!item.available}
-              className={`rounded-lg border p-2.5 sm:p-3 text-left transition-colors active:scale-95 ${
+              className={`rounded-lg border overflow-hidden text-left transition-colors active:scale-95 ${
                 item.available
                   ? "border-border bg-card hover:bg-muted cursor-pointer"
                   : "border-border/50 bg-muted text-muted-foreground opacity-50 cursor-not-allowed"
               }`}
             >
-              <div className="font-medium text-foreground text-sm sm:text-base line-clamp-2">{item.name}</div>
-              <div className="text-base sm:text-lg font-bold text-primary mt-1.5 sm:mt-2">${item.price.toFixed(2)}</div>
-              {!item.available && <div className="text-xs text-muted-foreground mt-1">Out of Stock</div>}
+              {item.imageUrl && (
+                <div className="relative w-full h-32 sm:h-40 bg-muted">
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                    unoptimized={item.imageUrl.startsWith("data:")}
+                  />
+                </div>
+              )}
+              <div className="p-2.5 sm:p-3">
+                <div className="font-medium text-foreground text-sm sm:text-base line-clamp-2">{item.name}</div>
+                <div className="text-base sm:text-lg font-bold text-primary mt-1.5 sm:mt-2">${item.price.toFixed(2)}</div>
+                {!item.available && <div className="text-xs text-muted-foreground mt-1">Out of Stock</div>}
+              </div>
             </button>
           ))}
         </div>

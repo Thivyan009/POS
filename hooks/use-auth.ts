@@ -2,35 +2,23 @@
 
 import { useRouter } from "next/navigation"
 import { useCallback } from "react"
-
-interface User {
-  username: string
-  role: "admin" | "biller"
-  token: string
-}
+import { authService, type AuthUser } from "@/services/auth-service"
 
 export function useAuth() {
   const router = useRouter()
 
-  const getUser = useCallback((): User | null => {
-    if (typeof window === "undefined") return null
-
-    const token = localStorage.getItem("pos-token")
-    const role = localStorage.getItem("pos-role") as "admin" | "biller" | null
-    const username = localStorage.getItem("pos-username")
-
-    if (token && role && username) {
-      return { token, role, username }
-    }
-    return null
+  const getUser = useCallback((): AuthUser | null => {
+    return authService.getCurrentUser()
   }, [])
 
   const logout = useCallback(() => {
-    localStorage.removeItem("pos-token")
-    localStorage.removeItem("pos-role")
-    localStorage.removeItem("pos-username")
+    authService.clearSession()
     router.push("/login")
   }, [router])
 
-  return { getUser, logout }
+  const isAuthenticated = useCallback((): boolean => {
+    return authService.isAuthenticated()
+  }, [])
+
+  return { getUser, logout, isAuthenticated }
 }

@@ -40,40 +40,90 @@ export default function MenuManagement() {
     }
   }
 
-  const handleCategorySave = (category: any) => {
-    if (editingCategory) {
-      setCategories(categories.map((c) => (c.id === category.id ? category : c)))
-      toast({ title: "Success", description: "Category updated" })
-    } else {
-      setCategories([...categories, { ...category, id: `cat-${Date.now()}` }])
-      toast({ title: "Success", description: "Category added" })
+  const handleCategorySave = async (category: any) => {
+    try {
+      if (editingCategory) {
+        const updated = await apiService.updateMenuCategory(editingCategory.id, { name: category.name })
+        setCategories(categories.map((c) => (c.id === updated.id ? updated : c)))
+        toast({ title: "Success", description: "Category updated" })
+      } else {
+        const newCategory = await apiService.createMenuCategory({ name: category.name })
+        setCategories([...categories, newCategory])
+        toast({ title: "Success", description: "Category added" })
+      }
+      setShowCategoryForm(false)
+      setEditingCategory(null)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: editingCategory ? "Failed to update category" : "Failed to create category",
+        variant: "destructive",
+      })
     }
-    setShowCategoryForm(false)
-    setEditingCategory(null)
   }
 
-  const handleCategoryDelete = (categoryId: string) => {
-    setCategories(categories.filter((c) => c.id !== categoryId))
-    // Remove items in this category
-    setItems(items.filter((i) => i.categoryId !== categoryId))
-    toast({ title: "Success", description: "Category deleted" })
-  }
-
-  const handleItemSave = (item: any) => {
-    if (editingItem) {
-      setItems(items.map((i) => (i.id === item.id ? item : i)))
-      toast({ title: "Success", description: "Item updated" })
-    } else {
-      setItems([...items, { ...item, id: `item-${Date.now()}` }])
-      toast({ title: "Success", description: "Item added" })
+  const handleCategoryDelete = async (categoryId: string) => {
+    try {
+      await apiService.deleteMenuCategory(categoryId)
+      setCategories(categories.filter((c) => c.id !== categoryId))
+      // Remove items in this category
+      setItems(items.filter((i) => i.categoryId !== categoryId))
+      toast({ title: "Success", description: "Category deleted" })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete category",
+        variant: "destructive",
+      })
     }
-    setShowItemForm(false)
-    setEditingItem(null)
   }
 
-  const handleItemDelete = (itemId: string) => {
-    setItems(items.filter((i) => i.id !== itemId))
-    toast({ title: "Success", description: "Item deleted" })
+  const handleItemSave = async (item: any) => {
+    try {
+      if (editingItem) {
+        const updated = await apiService.updateMenuItem(editingItem.id, {
+          name: item.name,
+          price: item.price,
+          categoryId: item.categoryId,
+          tax: item.tax,
+          available: item.available,
+        })
+        setItems(items.map((i) => (i.id === updated.id ? updated : i)))
+        toast({ title: "Success", description: "Item updated" })
+      } else {
+        const newItem = await apiService.createMenuItem({
+          name: item.name,
+          price: item.price,
+          categoryId: item.categoryId,
+          tax: item.tax,
+          available: item.available,
+        })
+        setItems([...items, newItem])
+        toast({ title: "Success", description: "Item added" })
+      }
+      setShowItemForm(false)
+      setEditingItem(null)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: editingItem ? "Failed to update item" : "Failed to create item",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleItemDelete = async (itemId: string) => {
+    try {
+      await apiService.deleteMenuItem(itemId)
+      setItems(items.filter((i) => i.id !== itemId))
+      toast({ title: "Success", description: "Item deleted" })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete item",
+        variant: "destructive",
+      })
+    }
   }
 
   if (isLoading) {

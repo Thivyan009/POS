@@ -12,6 +12,8 @@ import TopItems from "./top-items"
 import RecentBills from "./recent-bills"
 import MenuManagement from "./menu-management"
 import UserManagement from "./user-management"
+import DateFilter from "./date-filter"
+import DiscountCodeManagement from "./discount-code-management"
 
 export default function AdminDashboard() {
   const { logout } = useAuth()
@@ -21,14 +23,15 @@ export default function AdminDashboard() {
   const [salesByHour, setSalesByHour] = useState([])
   const [topItems, setTopItems] = useState([])
   const [currentSection, setCurrentSection] = useState("overview")
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({})
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const [rev, sales, items] = await Promise.all([
-          apiService.getRevenue(),
-          apiService.getSalesByHour(),
-          apiService.getTopItems(),
+          apiService.getRevenue(dateRange.from, dateRange.to),
+          apiService.getSalesByHour(dateRange.from, dateRange.to),
+          apiService.getTopItems(dateRange.from, dateRange.to),
         ])
         setRevenue(rev)
         setSalesByHour(sales)
@@ -45,7 +48,7 @@ export default function AdminDashboard() {
     }
 
     loadData()
-  }, [toast])
+  }, [toast, dateRange])
 
   return (
     <div className="flex h-screen flex-col bg-background">
@@ -57,8 +60,9 @@ export default function AdminDashboard() {
         <main className="flex-1 overflow-auto p-3 sm:p-4 lg:p-6 pb-20 lg:pb-6">
           {currentSection === "overview" && (
             <div className="space-y-4 sm:space-y-6">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3 sm:mb-4">Dashboard</h2>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-foreground">Dashboard</h2>
+                <DateFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
               </div>
 
               {isLoading ? (
@@ -90,11 +94,16 @@ export default function AdminDashboard() {
           {currentSection === "users" && <UserManagement />}
 
           {currentSection === "bills" && (
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3 sm:mb-4">Bill History</h2>
-              <p className="text-sm sm:text-base text-muted-foreground">Bill history coming soon...</p>
+            <div className="space-y-4 sm:space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-foreground">Bill History</h2>
+                <DateFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
+              </div>
+              <RecentBills dateRange={dateRange} />
             </div>
           )}
+
+          {currentSection === "discounts" && <DiscountCodeManagement />}
         </main>
       </div>
     </div>
