@@ -2,15 +2,28 @@
 
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import { Menu } from "lucide-react"
 
 interface AdminHeaderProps {
   onLogout: () => void
+  onMenuClick?: () => void
 }
 
-export default function AdminHeader({ onLogout }: AdminHeaderProps) {
+export default function AdminHeader({ onLogout, onMenuClick }: AdminHeaderProps) {
   return (
     <div className="flex items-center justify-between border-b border-border bg-card p-3 sm:p-4">
       <div className="flex items-center gap-3 flex-1 min-w-0">
+        {/* Mobile Menu Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden flex-shrink-0"
+          onClick={onMenuClick}
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        
         <Image
           src="/restaurant-logo.png"
           alt="Restaurant Logo"

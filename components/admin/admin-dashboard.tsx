@@ -24,6 +24,7 @@ export default function AdminDashboard() {
   const [topItems, setTopItems] = useState([])
   const [currentSection, setCurrentSection] = useState("overview")
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({})
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     if (currentSection !== "overview") return
@@ -55,12 +56,17 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex h-screen flex-col bg-background">
-      <AdminHeader onLogout={logout} />
+      <AdminHeader onLogout={logout} onMenuClick={() => setMobileMenuOpen(true)} />
 
       <div className="flex flex-1 overflow-hidden">
-        <AdminNav currentSection={currentSection} onSelectSection={setCurrentSection} />
+        <AdminNav 
+          currentSection={currentSection} 
+          onSelectSection={setCurrentSection}
+          mobileMenuOpen={mobileMenuOpen}
+          onMobileMenuOpenChange={setMobileMenuOpen}
+        />
 
-        <main className="flex-1 overflow-auto p-3 sm:p-4 lg:p-6 pb-20 lg:pb-6">
+        <main className="flex-1 overflow-auto p-3 sm:p-4 lg:p-6">
           {currentSection === "overview" && (
             <div className="space-y-4 sm:space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
