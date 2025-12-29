@@ -37,7 +37,7 @@ export default function ActionBar({ bill, onSubmit, onCancel, isSubmitting = fal
   }
 
   return (
-    <div className="border-t border-border bg-card p-2 sm:p-4 lg:pb-4" onKeyDown={handleKeyDown}>
+    <div className="border-t border-border bg-card p-2 sm:p-4 pb-20 sm:pb-4 lg:pb-4" onKeyDown={handleKeyDown}>
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         {/* WhatsApp Input */}
         <div className="flex-1 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
