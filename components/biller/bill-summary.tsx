@@ -72,7 +72,7 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
   }
 
   return (
-    <div className="print-bill flex w-full lg:w-[30%] flex-col bg-card border-l border-border h-full">
+    <div className="flex w-full lg:w-[30%] flex-col bg-card border-l border-border h-full">
       <div className="p-3 sm:p-4 border-b border-border flex-shrink-0">
         <h2 className="text-base sm:text-lg font-bold text-foreground">Bill Summary</h2>
       </div>

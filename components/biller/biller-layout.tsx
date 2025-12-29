@@ -9,6 +9,7 @@ import { apiService } from "@/services/api-service"
 import MenuSection from "./menu-section"
 import BillSummary from "./bill-summary"
 import ActionBar from "./action-bar"
+import PrintableBill from "./printable-bill"
 import { useBillerState } from "@/hooks/use-biller-state"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,7 @@ export default function BillerLayout() {
   const [selectedCategory, setSelectedCategory] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
   const [isPrinting, setIsPrinting] = useState(false)
+  const [printBillData, setPrintBillData] = useState<{ bill: any; billId?: string; createdAt?: string } | null>(null)
 
   const { bill, addItem, removeItem, updateQuantity, clearBill, applyDiscount } = useBillerState()
 
@@ -91,12 +93,21 @@ export default function BillerLayout() {
 
         const result = await apiService.createBill(billData)
 
-        // Print bill
-        try {
-          window.print?.()
-        } catch (printError) {
-          console.error("Print error:", printError)
-        }
+        // Set print data before printing
+        setPrintBillData({
+          bill: bill,
+          billId: result.id,
+          createdAt: result.createdAt || new Date().toISOString(),
+        })
+
+        // Small delay to ensure state is updated, then print
+        setTimeout(() => {
+          try {
+            window.print?.()
+          } catch (printError) {
+            console.error("Print error:", printError)
+          }
+        }, 100)
 
         // Send WhatsApp if enabled
         if (sendViaWhatsapp && whatsappNumber) {
@@ -117,8 +128,11 @@ export default function BillerLayout() {
           description: `Bill #${result.id} successfully created`,
         })
 
-        // Clear bill
-        clearBill()
+        // Clear bill after a short delay to allow print dialog to open
+        setTimeout(() => {
+          clearBill()
+          setPrintBillData(null)
+        }, 500)
       } catch (error) {
         toast({
           title: "Error submitting bill",
@@ -261,6 +275,15 @@ export default function BillerLayout() {
 
       {/* Bottom Action Bar */}
       <ActionBar bill={bill} onSubmit={handleSubmitBill} onCancel={clearBill} isSubmitting={isPrinting} />
+
+      {/* Printable Bill Receipt - Hidden by default, shown only when printing */}
+      {printBillData && (
+        <PrintableBill
+          bill={printBillData.bill}
+          billId={printBillData.billId}
+          createdAt={printBillData.createdAt}
+        />
+      )}
     </div>
   )
 }

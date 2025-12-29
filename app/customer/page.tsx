@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { apiService } from "@/services/api-service"
 import CustomerMenu from "@/components/customer/customer-menu"
 import { Skeleton } from "@/components/ui/skeleton"
-import { UtensilsCrossed } from "lucide-react"
+import Image from "next/image"
 
 export default function CustomerPage() {
   const [categories, setCategories] = useState<any[]>([])
@@ -49,7 +49,14 @@ export default function CustomerPage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16 sm:h-20">
               <div className="flex items-center gap-3">
-                <Skeleton className="w-10 h-10 rounded-lg" />
+                <Image
+                  src="/restaurant-logo.png"
+                  alt="Restaurant Logo"
+                  width={48}
+                  height={48}
+                  className="w-10 h-10 sm:w-12 sm:h-12 object-contain flex-shrink-0 opacity-50"
+                  priority
+                />
                 <div className="space-y-2">
                   <Skeleton className="h-6 w-32" />
                   <Skeleton className="h-4 w-48 hidden sm:block" />
