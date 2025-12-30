@@ -75,3 +75,6 @@ After migration, try logging in with:
 3. Check browser console for detailed error messages
 4. Check server logs in terminal
 
+
+
+

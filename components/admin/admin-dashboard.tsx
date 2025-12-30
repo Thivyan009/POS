@@ -12,8 +12,10 @@ import TopItems from "./top-items"
 import RecentBills from "./recent-bills"
 import MenuManagement from "./menu-management"
 import UserManagement from "./user-management"
+import CustomerManagement from "./customer-management"
 import DateFilter from "./date-filter"
 import DiscountCodeManagement from "./discount-code-management"
+import BirthdayAlerts from "./birthday-alerts"
 
 export default function AdminDashboard() {
   const { logout } = useAuth()
@@ -83,6 +85,7 @@ export default function AdminDashboard() {
                 </div>
               ) : (
                 <>
+                  <BirthdayAlerts />
                   <RevenueCards data={revenue} />
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                     <div className="lg:col-span-2">
@@ -101,6 +104,8 @@ export default function AdminDashboard() {
           {currentSection === "menu" && <MenuManagement />}
 
           {currentSection === "users" && <UserManagement />}
+
+          {currentSection === "customers" && <CustomerManagement />}
 
           {currentSection === "bills" && (
             <div className="space-y-4 sm:space-y-6">

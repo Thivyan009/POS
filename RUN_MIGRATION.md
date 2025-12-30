@@ -127,3 +127,6 @@ You should see:
 - ✅ Email column exists
 - ✅ Default admin user exists
 
+
+
+

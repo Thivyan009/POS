@@ -65,12 +65,6 @@ export default function BillDetailsDialog({
                     {format(new Date(bill.created_at), "PPpp")}
                   </p>
                 </div>
-                {bill.whatsapp_number && (
-                  <div>
-                    <p className="text-muted-foreground">WhatsApp Number</p>
-                    <p className="font-medium">{bill.whatsapp_number}</p>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -143,4 +137,7 @@ export default function BillDetailsDialog({
     </Dialog>
   )
 }
+
+
+
 

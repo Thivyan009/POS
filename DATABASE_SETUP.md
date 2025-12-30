@@ -107,3 +107,6 @@ The system automatically detects missing columns when you:
 
 All migrations are idempotent and can be run multiple times safely.
 
+
+
+

@@ -36,6 +36,16 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Customers Table
+CREATE TABLE IF NOT EXISTS customers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(255) NOT NULL,
+  phone VARCHAR(20) NOT NULL UNIQUE,
+  date_of_birth DATE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Bills Table
 CREATE TABLE IF NOT EXISTS bills (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -44,7 +54,7 @@ CREATE TABLE IF NOT EXISTS bills (
   discount DECIMAL(10, 2) NOT NULL DEFAULT 0 CHECK (discount >= 0),
   total DECIMAL(10, 2) NOT NULL CHECK (total >= 0),
   status VARCHAR(20) NOT NULL DEFAULT 'completed' CHECK (status IN ('completed', 'pending', 'cancelled')),
-  whatsapp_number VARCHAR(20),
+  customer_id UUID REFERENCES customers(id) ON DELETE SET NULL,
   created_by UUID REFERENCES users(id) ON DELETE SET NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -77,12 +87,15 @@ CREATE INDEX IF NOT EXISTS idx_menu_items_category_id ON menu_items(category_id)
 CREATE INDEX IF NOT EXISTS idx_menu_items_available ON menu_items(available);
 CREATE INDEX IF NOT EXISTS idx_bills_created_at ON bills(created_at);
 CREATE INDEX IF NOT EXISTS idx_bills_created_by ON bills(created_by);
+CREATE INDEX IF NOT EXISTS idx_bills_customer_id ON bills(customer_id);
 CREATE INDEX IF NOT EXISTS idx_bill_items_bill_id ON bill_items(bill_id);
 CREATE INDEX IF NOT EXISTS idx_bill_items_menu_item_id ON bill_items(menu_item_id);
 CREATE INDEX IF NOT EXISTS idx_discount_codes_code ON discount_codes(code);
 CREATE INDEX IF NOT EXISTS idx_discount_codes_active ON discount_codes(active);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_enabled ON users(enabled);
+CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone);
+CREATE INDEX IF NOT EXISTS idx_customers_date_of_birth ON customers(date_of_birth);
 
 -- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -114,6 +127,11 @@ CREATE TRIGGER update_discount_codes_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_customers_updated_at
+  BEFORE UPDATE ON customers
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
 -- Enable Row Level Security (RLS)
 ALTER TABLE menu_categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
@@ -121,6 +139,7 @@ ALTER TABLE bills ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bill_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE discount_codes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies - Allow all operations for authenticated users
 -- In production, you should customize these policies based on your security requirements
@@ -171,6 +190,25 @@ CREATE POLICY "Allow public read access to discount_codes"
 CREATE POLICY "Allow authenticated write access to discount_codes"
   ON discount_codes FOR ALL
   USING (auth.role() = 'authenticated');
+
+-- Customers: Allow public access for customer operations
+CREATE POLICY "Allow public read access to customers"
+  ON customers FOR SELECT
+  USING (true);
+
+CREATE POLICY "Allow public insert access to customers"
+  ON customers FOR INSERT
+  WITH CHECK (true);
+
+CREATE POLICY "Allow public update access to customers"
+  ON customers FOR UPDATE
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "Allow public delete access to customers"
+  ON customers FOR DELETE
+  USING (true);
+
 
 -- Insert sample data (optional - remove in production)
 -- Note: You'll need to hash passwords properly in production

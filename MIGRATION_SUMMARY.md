@@ -79,3 +79,6 @@ The database schema and codebase have been updated to:
 - Email is now the unique identifier for users
 - No username field exists anywhere in the codebase
 
+
+
+

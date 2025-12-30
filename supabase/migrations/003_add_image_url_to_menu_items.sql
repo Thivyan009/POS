@@ -11,3 +11,6 @@ CREATE INDEX IF NOT EXISTS idx_menu_items_image_url ON menu_items(image_url) WHE
 -- Step 3: Add comment to document the column
 COMMENT ON COLUMN menu_items.image_url IS 'URL or data URL of the menu item image';
 
+
+
+

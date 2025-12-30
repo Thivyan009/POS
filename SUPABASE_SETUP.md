@@ -124,3 +124,6 @@ The schema includes sample data (categories and menu items). You can:
 
 For more information, visit the [Supabase Documentation](https://supabase.com/docs).
 
+
+
+

@@ -35,7 +35,7 @@ export interface Bill {
   discount: number
   total: number
   status: 'completed' | 'pending' | 'cancelled'
-  whatsapp_number?: string | null
+  customer_id?: string | null
   created_at: string
   created_by?: string
 }
@@ -86,7 +86,7 @@ export interface BillRow {
   discount: number
   total: number
   status: 'completed' | 'pending' | 'cancelled'
-  whatsapp_number?: string | null
+  customer_id?: string | null
   created_at: string
   created_by?: string
 }
@@ -119,6 +119,24 @@ export interface DiscountCodeRow {
   description?: string | null
   active: boolean
   created_at: string
+  updated_at?: string
+}
+
+export interface Customer {
+  id: string
+  name: string
+  phone: string
+  date_of_birth?: string | null
+  created_at?: string
+  updated_at?: string
+}
+
+export interface CustomerRow {
+  id: string
+  name: string
+  phone: string
+  date_of_birth?: string | null
+  created_at?: string
   updated_at?: string
 }
 

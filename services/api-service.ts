@@ -262,7 +262,7 @@ export const apiService = {
     tax: number
     discount: number
     total: number
-    whatsappNumber?: string | null
+    customerId?: string | null
     createdBy?: string | null
   }) => {
     try {
@@ -275,7 +275,7 @@ export const apiService = {
             tax: billData.tax,
             discount: billData.discount,
             total: billData.total,
-            whatsapp_number: billData.whatsappNumber || null,
+            customer_id: billData.customerId || null,
             created_by: billData.createdBy || null,
             status: "completed",
           },
@@ -283,7 +283,52 @@ export const apiService = {
         .select()
         .single()
 
-      if (billError) throw billError
+      if (billError) {
+        // Enhanced error logging for bill creation
+        const errorDetails: any = {
+          message: billError.message,
+          details: billError.details,
+          hint: billError.hint,
+          code: billError.code,
+          status: (billError as any).status,
+          statusText: (billError as any).statusText,
+        }
+        
+        try {
+          errorDetails.errorString = String(billError)
+          errorDetails.errorJSON = JSON.stringify(billError, (key, value) => {
+            if (value instanceof Error) {
+              return {
+                name: value.name,
+                message: value.message,
+                stack: value.stack,
+              }
+            }
+            return value
+          })
+        } catch (e) {
+          errorDetails.serializeError = String(e)
+        }
+        
+        console.error("Supabase error creating bill:", errorDetails)
+        
+        // Provide user-friendly error messages
+        if (billError.code === "42P01") {
+          throw new Error("Bills table not found. Please run the database migration.")
+        } else if (billError.code === "42703") {
+          throw new Error("Database schema mismatch. The customer_id column may not exist. Please run migration: 004_create_customers_table.sql")
+        } else if (billError.code === "42501") {
+          throw new Error("Permission denied. Please check Row Level Security policies for the bills table.")
+        } else if (billError.message) {
+          throw new Error(billError.message)
+        } else {
+          throw new Error(billError.details || billError.hint || "Failed to create bill. Error code: " + (billError.code || "unknown"))
+        }
+      }
+
+      if (!bill) {
+        throw new Error("No bill data returned from database")
+      }
 
       // Then, create bill items
       const billItems = billData.items.map((item) => ({
@@ -297,7 +342,22 @@ export const apiService = {
 
       const { error: itemsError } = await supabase.from("bill_items").insert(billItems)
 
-      if (itemsError) throw itemsError
+      if (itemsError) {
+        console.error("Supabase error creating bill items:", {
+          message: itemsError.message,
+          details: itemsError.details,
+          hint: itemsError.hint,
+          code: itemsError.code,
+        })
+        
+        if (itemsError.code === "42501") {
+          throw new Error("Permission denied. Please check Row Level Security policies for the bill_items table.")
+        } else if (itemsError.message) {
+          throw new Error("Failed to create bill items: " + itemsError.message)
+        } else {
+          throw new Error("Failed to create bill items. Error code: " + (itemsError.code || "unknown"))
+        }
+      }
 
       return {
         id: bill.id,
@@ -305,9 +365,41 @@ export const apiService = {
         status: "completed",
         createdAt: bill.created_at,
       }
-    } catch (error) {
-      console.error("Error creating bill:", error)
-      throw error
+    } catch (error: any) {
+      // Enhanced error logging
+      const errorLog: any = {
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        code: error?.code,
+        name: error?.name,
+        stack: error?.stack,
+      }
+      
+      try {
+        errorLog.errorString = String(error)
+        errorLog.errorJSON = JSON.stringify(error, (key, value) => {
+          if (value instanceof Error) {
+            return {
+              name: value.name,
+              message: value.message,
+              stack: value.stack,
+            }
+          }
+          return value
+        })
+      } catch (e) {
+        errorLog.serializeError = String(e)
+      }
+      
+      console.error("Error creating bill - Full details:", errorLog)
+      
+      // Re-throw if it's already a user-friendly error
+      if (error instanceof Error && error.message) {
+        throw error
+      }
+      
+      throw new Error(error?.message || error?.details || error?.hint || "Failed to create bill. Please check the console for details.")
     }
   },
 
@@ -348,7 +440,7 @@ export const apiService = {
             discount: Number(bill.discount),
             total: Number(bill.total),
             status: bill.status,
-            whatsapp_number: bill.whatsapp_number,
+            customer_id: bill.customer_id,
             created_by: bill.created_by,
             created_at: bill.created_at,
             createdAt: bill.created_at, // Keep for backwards compatibility
@@ -745,6 +837,391 @@ export const apiService = {
     } catch (error) {
       console.error("Error validating discount code:", error)
       return null
+    }
+  },
+
+  // Customer APIs
+  getCustomerByPhone: async (phone: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("customers")
+        .select("*")
+        .eq("phone", phone)
+        .single()
+
+      if (error) {
+        // PGRST116 is "not found" - this is expected when customer doesn't exist
+        if (error.code === "PGRST116") {
+          return null
+        }
+        console.error("Supabase error fetching customer by phone:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        })
+        throw error
+      }
+      return data || null
+    } catch (error: any) {
+      console.error("Error fetching customer by phone:", {
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        code: error?.code,
+      })
+      return null
+    }
+  },
+
+  createCustomer: async (customerData: { name: string; phone: string; date_of_birth?: string | null }) => {
+    try {
+      // Validate input
+      if (!customerData.name || !customerData.phone) {
+        throw new Error("Name and phone number are required")
+      }
+
+      // Clean phone number (remove spaces, ensure it starts with +94)
+      const cleanPhone = customerData.phone.trim().replace(/\s+/g, "")
+      
+      // First, try to verify the table exists by doing a simple query
+      const { error: tableCheckError } = await supabase
+        .from("customers")
+        .select("id")
+        .limit(0)
+      
+      if (tableCheckError) {
+        if (tableCheckError.code === "42P01" || tableCheckError.message?.includes("does not exist")) {
+          throw new Error("Customers table not found. Please run the database migration file: supabase/migrations/004_create_customers_table.sql in your Supabase SQL Editor.")
+        }
+      }
+      
+      // Prepare the insert data
+      const insertData: any = {
+        name: customerData.name.trim(),
+        phone: cleanPhone,
+      }
+      
+      // Handle date_of_birth - explicitly set to NULL if not provided, or set the date value
+      console.log("createCustomer received date_of_birth:", customerData.date_of_birth, "type:", typeof customerData.date_of_birth)
+      
+      if (customerData.date_of_birth && typeof customerData.date_of_birth === 'string' && customerData.date_of_birth.trim()) {
+        const trimmedDate = customerData.date_of_birth.trim()
+        console.log("Processing date_of_birth:", trimmedDate)
+        
+        // Validate date format (YYYY-MM-DD)
+        if (/^\d{4}-\d{2}-\d{2}$/.test(trimmedDate)) {
+          // Validate the date is actually valid (e.g., not 2024-13-45)
+          const [year, month, day] = trimmedDate.split('-').map(Number)
+          const testDate = new Date(year, month - 1, day)
+          
+          if (testDate.getFullYear() === year && testDate.getMonth() === month - 1 && testDate.getDate() === day) {
+            // Ensure it's a valid date string in YYYY-MM-DD format
+            insertData.date_of_birth = trimmedDate
+            console.log("✅ Setting date_of_birth to:", trimmedDate, "type:", typeof trimmedDate)
+          } else {
+            console.warn("❌ Invalid date value. Received:", trimmedDate, "Parsed as:", testDate)
+            insertData.date_of_birth = null
+          }
+        } else {
+          console.warn("❌ Invalid date format. Received:", trimmedDate, "Expected format: YYYY-MM-DD")
+          insertData.date_of_birth = null
+        }
+      } else {
+        console.log("date_of_birth is empty or invalid, setting to NULL")
+        // Explicitly set to null - don't omit the field
+        insertData.date_of_birth = null
+      }
+      
+      console.log("Inserting customer data:", JSON.stringify(insertData, null, 2))
+      console.log("date_of_birth value:", insertData.date_of_birth, "type:", typeof insertData.date_of_birth)
+      
+      const { data, error } = await supabase
+        .from("customers")
+        .insert([insertData])
+        .select()
+        .single()
+      
+      console.log("Supabase insert response - data:", data, "error:", error)
+
+      if (error) {
+        // Try to extract all possible error properties
+        const errorInfo: any = {}
+        try {
+          // Try to get all properties from the error object
+          for (const key in error) {
+            try {
+              errorInfo[key] = (error as any)[key]
+            } catch (e) {
+              errorInfo[key] = String((error as any)[key])
+            }
+          }
+          
+          // Also try JSON.stringify with replacer
+          errorInfo.stringified = JSON.stringify(error, (key, value) => {
+            if (value instanceof Error) {
+              return {
+                name: value.name,
+                message: value.message,
+                stack: value.stack,
+              }
+            }
+            return value
+          })
+        } catch (e) {
+          errorInfo.stringifyError = String(e)
+        }
+        
+        // Log comprehensive error details
+        console.error("Supabase error creating customer:", {
+          error: error,
+          errorInfo: errorInfo,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+          status: (error as any).status,
+          statusText: (error as any).statusText,
+          customerData: customerData,
+          insertData: insertData,
+        })
+        
+        // Provide user-friendly error messages
+        if (error.code === "23505") {
+          // Unique constraint violation (duplicate phone)
+          throw new Error("A customer with this phone number already exists")
+        } else if (error.code === "42P01") {
+          // Table doesn't exist
+          throw new Error("Customers table not found. Please run the database migration: 004_create_customers_table.sql")
+        } else if (error.code === "42501") {
+          // Insufficient privilege (RLS policy issue)
+          throw new Error("Permission denied. Please check Row Level Security policies for the customers table.")
+        } else if (error.message) {
+          throw new Error(error.message)
+        } else if (error.details) {
+          throw new Error(error.details)
+        } else if (error.hint) {
+          throw new Error(error.hint)
+        } else {
+          throw new Error("Failed to create customer. Error code: " + (error.code || "unknown") + ". Please check your database connection and ensure the customers table exists.")
+        }
+      }
+
+      if (!data) {
+        throw new Error("No data returned from database")
+      }
+
+      console.log("Customer created successfully. Returned data:", {
+        id: data.id,
+        name: data.name,
+        phone: data.phone,
+        date_of_birth: data.date_of_birth,
+        date_of_birth_type: typeof data.date_of_birth,
+        date_of_birth_raw: JSON.stringify(data.date_of_birth),
+        created_at: data.created_at,
+      })
+      
+      // Verify the date was actually saved
+      if (insertData.date_of_birth && !data.date_of_birth) {
+        console.error("⚠️ WARNING: date_of_birth was sent but not returned!", {
+          sent: insertData.date_of_birth,
+          received: data.date_of_birth
+        })
+      } else if (insertData.date_of_birth && data.date_of_birth) {
+        console.log("✅ date_of_birth successfully saved:", data.date_of_birth)
+      }
+
+      return {
+        id: data.id,
+        name: data.name,
+        phone: data.phone,
+        date_of_birth: data.date_of_birth,
+        created_at: data.created_at,
+      }
+    } catch (error: any) {
+      // Enhanced error logging with better serialization
+      const errorDetails: any = {
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        code: error?.code,
+        name: error?.name,
+        stack: error?.stack,
+      }
+      
+      // Try multiple ways to serialize the error
+      try {
+        errorDetails.errorString = String(error)
+      } catch (e) {
+        errorDetails.stringError = String(e)
+      }
+      
+      try {
+        errorDetails.errorJSON = JSON.stringify(error, (key, value) => {
+          if (value instanceof Error) {
+            return {
+              name: value.name,
+              message: value.message,
+              stack: value.stack,
+            }
+          }
+          return value
+        })
+      } catch (e) {
+        errorDetails.jsonError = String(e)
+      }
+      
+      // Try to get all enumerable properties
+      try {
+        const props: any = {}
+        for (const key in error) {
+          try {
+            props[key] = (error as any)[key]
+          } catch (e) {
+            props[key] = "[Unable to access]"
+          }
+        }
+        errorDetails.properties = props
+      } catch (e) {
+        errorDetails.propertiesError = String(e)
+      }
+      
+      // Also log the raw error
+      errorDetails.rawError = error
+      
+      console.error("Error creating customer - Full details:", errorDetails)
+      
+      // Re-throw if it's already a user-friendly error
+      if (error instanceof Error && error.message) {
+        throw error
+      }
+      
+      // Provide a helpful error message
+      const errorMessage = error?.message || 
+                          error?.details || 
+                          error?.hint || 
+                          (error?.code ? `Database error (code: ${error.code})` : null) ||
+                          "Failed to create customer. Please ensure the customers table exists by running the migration: supabase/migrations/004_create_customers_table.sql"
+      
+      throw new Error(errorMessage)
+    }
+  },
+
+  getAllCustomers: async () => {
+    try {
+      const { data, error } = await supabase
+        .from("customers")
+        .select("*")
+        .order("name", { ascending: true })
+
+      if (error) {
+        console.error("Supabase error fetching customers:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        })
+        throw error
+      }
+      return (data || []).map((customer) => ({
+        id: customer.id,
+        name: customer.name,
+        phone: customer.phone,
+        date_of_birth: customer.date_of_birth,
+        created_at: customer.created_at,
+        updated_at: customer.updated_at,
+      }))
+    } catch (error: any) {
+      console.error("Error fetching customers:", {
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        code: error?.code,
+        error: error,
+      })
+      throw new Error(error?.message || error?.details || "Failed to fetch customers")
+    }
+  },
+
+  updateCustomer: async (id: string, customerData: { name?: string; phone?: string; date_of_birth?: string | null }) => {
+    try {
+      const { data, error } = await supabase
+        .from("customers")
+        .update(customerData)
+        .eq("id", id)
+        .select()
+        .single()
+
+      if (error) throw error
+      return {
+        id: data.id,
+        name: data.name,
+        phone: data.phone,
+        date_of_birth: data.date_of_birth,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      }
+    } catch (error) {
+      console.error("Error updating customer:", error)
+      throw error
+    }
+  },
+
+  deleteCustomer: async (id: string) => {
+    try {
+      const { error } = await supabase.from("customers").delete().eq("id", id)
+      if (error) throw error
+      return { success: true }
+    } catch (error) {
+      console.error("Error deleting customer:", error)
+      throw error
+    }
+  },
+
+  getBirthdayCustomers: async (date?: Date) => {
+    try {
+      const targetDate = date || new Date()
+      const month = targetDate.getMonth() + 1
+      const day = targetDate.getDate()
+
+      // Query customers whose birthday matches today
+      const { data, error } = await supabase
+        .from("customers")
+        .select("*")
+        .not("date_of_birth", "is", null)
+
+      if (error) {
+        console.error("Supabase error fetching birthday customers:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        })
+        throw error
+      }
+
+      // Filter customers whose birthday is today
+      const birthdayCustomers = (data || []).filter((customer) => {
+        if (!customer.date_of_birth) return false
+        const dob = new Date(customer.date_of_birth)
+        return dob.getMonth() + 1 === month && dob.getDate() === day
+      })
+
+      return birthdayCustomers.map((customer) => ({
+        id: customer.id,
+        name: customer.name,
+        phone: customer.phone,
+        date_of_birth: customer.date_of_birth,
+      }))
+    } catch (error: any) {
+      console.error("Error fetching birthday customers:", {
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        code: error?.code,
+        error: error,
+      })
+      throw new Error(error?.message || error?.details || "Failed to fetch birthday customers")
     }
   },
 }
