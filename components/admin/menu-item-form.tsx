@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import Image from "next/image"
 import { Upload, X } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface MenuItemFormProps {
   item?: any
@@ -24,7 +25,10 @@ export default function MenuItemForm({ item, categories, onSave, onCancel }: Men
   const [available, setAvailable] = useState(true)
   const [imagePreview, setImagePreview] = useState<string | null>(item?.imageUrl || null)
   const [imageFile, setImageFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [oldImagePath, setOldImagePath] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
     if (item) {
@@ -34,6 +38,31 @@ export default function MenuItemForm({ item, categories, onSave, onCancel }: Men
       setTax(item.tax)
       setAvailable(item.available)
       setImagePreview(item.imageUrl || null)
+      // Extract image path from Supabase Storage URL if it exists
+      if (item.imageUrl) {
+        try {
+          const url = new URL(item.imageUrl)
+          // Supabase Storage public URL format: /storage/v1/object/public/bucket-name/path
+          // Bucket name is "Menu Images" (may be URL encoded as "Menu%20Images")
+          const pathMatch = url.pathname.match(/\/storage\/v1\/object\/public\/(?:Menu%20Images|Menu Images)\/(.+)$/)
+          if (pathMatch) {
+            setOldImagePath(pathMatch[1])
+          } else {
+            // Fallback: try to extract from pathname directly
+            const fallbackMatch = url.pathname.match(/\/menu-items\/(.+)$/)
+            if (fallbackMatch) {
+              setOldImagePath(`menu-items/${fallbackMatch[1]}`)
+            } else {
+              setOldImagePath(null)
+            }
+          }
+        } catch {
+          // If URL parsing fails, it might be a data URL or external URL
+          setOldImagePath(null)
+        }
+      } else {
+        setOldImagePath(null)
+      }
     } else if (categories.length > 0) {
       setCategoryId(categories[0].id)
     }
@@ -44,13 +73,21 @@ export default function MenuItemForm({ item, categories, onSave, onCancel }: Men
     if (file) {
       // Validate file type
       if (!file.type.startsWith("image/")) {
-        alert("Please select an image file")
+        toast({
+          title: "Invalid file type",
+          description: "Please select an image file",
+          variant: "destructive",
+        })
         return
       }
       
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert("Image size should be less than 5MB")
+        toast({
+          title: "File too large",
+          description: "Image size should be less than 5MB",
+          variant: "destructive",
+        })
         return
       }
 
@@ -68,6 +105,10 @@ export default function MenuItemForm({ item, categories, onSave, onCancel }: Men
   const handleRemoveImage = () => {
     setImageFile(null)
     setImagePreview(null)
+    // Mark old image for deletion if it exists
+    if (item?.imageUrl && oldImagePath) {
+      // Keep the old image path for deletion when saving
+    }
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
@@ -77,39 +118,94 @@ export default function MenuItemForm({ item, categories, onSave, onCancel }: Men
     e.preventDefault()
     if (!name.trim() || !price || !categoryId) return
 
-    // Use the preview if available, otherwise keep the existing imageUrl
-    let imageUrl = imagePreview || item?.imageUrl || null
-    
-    // If a new file was uploaded, use the preview (data URL)
-    // In production, upload image to server and get URL:
-    // const formData = new FormData()
-    // formData.append("image", imageFile)
-    // const response = await fetch("/api/upload", { method: "POST", body: formData })
-    // const data = await response.json()
-    // imageUrl = data.url
+    setIsUploading(true)
+    let imageUrl = item?.imageUrl || null
+    let newImagePath: string | null = null
 
-    onSave({
-      ...(item || {}),
-      name: name.trim(),
-      price: Number.parseFloat(price),
-      categoryId,
-      tax,
-      available,
-      imageUrl,
-    })
-    
-    // Only reset form if creating new item
-    if (!item) {
-      setName("")
-      setPrice("")
-      setCategoryId("")
-      setTax(true)
-      setAvailable(true)
-      setImagePreview(null)
-      setImageFile(null)
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ""
+    try {
+      // If a new file was uploaded, upload it to Supabase Storage
+      if (imageFile) {
+        const formData = new FormData()
+        formData.append("image", imageFile)
+
+        const response = await fetch("/api/upload/image", {
+          method: "POST",
+          body: formData,
+        })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.error || "Failed to upload image")
+        }
+
+        const data = await response.json()
+        imageUrl = data.url
+        newImagePath = data.path
+
+        // Delete old image if updating and old image exists
+        if (item && oldImagePath && oldImagePath !== newImagePath) {
+          try {
+            await fetch(`/api/upload/image?path=${encodeURIComponent(oldImagePath)}`, {
+              method: "DELETE",
+            })
+          } catch (deleteError) {
+            // Log but don't fail the operation if deletion fails
+            console.error("Failed to delete old image:", deleteError)
+          }
+        }
+      } else if (!imagePreview && item?.imageUrl && oldImagePath) {
+        // Image was removed, delete the old image
+        imageUrl = null
+        try {
+          await fetch(`/api/upload/image?path=${encodeURIComponent(oldImagePath)}`, {
+            method: "DELETE",
+          })
+        } catch (deleteError) {
+          console.error("Failed to delete old image:", deleteError)
+        }
       }
+
+      onSave({
+        ...(item || {}),
+        name: name.trim(),
+        price: Number.parseFloat(price),
+        categoryId,
+        tax,
+        available,
+        imageUrl,
+      })
+      
+      // Only reset form if creating new item
+      if (!item) {
+        setName("")
+        setPrice("")
+        setCategoryId("")
+        setTax(true)
+        setAvailable(true)
+        setImagePreview(null)
+        setImageFile(null)
+        setOldImagePath(null)
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""
+        }
+      } else {
+        // Update old image path if new image was uploaded
+        if (newImagePath) {
+          setOldImagePath(newImagePath)
+        } else if (!imagePreview) {
+          setOldImagePath(null)
+        }
+        setImageFile(null)
+      }
+    } catch (error: any) {
+      toast({
+        title: "Upload failed",
+        description: error.message || "Failed to upload image. Please try again.",
+        variant: "destructive",
+      })
+      console.error("Upload error:", error)
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -228,12 +324,18 @@ export default function MenuItemForm({ item, categories, onSave, onCancel }: Men
       <div className="flex flex-col sm:flex-row gap-2">
         <Button
           type="submit"
-          disabled={!name.trim() || !price || !categoryId}
+          disabled={!name.trim() || !price || !categoryId || isUploading}
           className="bg-green-600 hover:bg-green-700 text-sm sm:text-base h-9 sm:h-10"
         >
-          {item ? "Update" : "Add"} Item
+          {isUploading ? "Uploading..." : item ? "Update" : "Add"} Item
         </Button>
-        <Button type="button" onClick={onCancel} variant="outline" className="text-sm sm:text-base h-9 sm:h-10">
+        <Button 
+          type="button" 
+          onClick={onCancel} 
+          variant="outline" 
+          disabled={isUploading}
+          className="text-sm sm:text-base h-9 sm:h-10"
+        >
           Cancel
         </Button>
       </div>

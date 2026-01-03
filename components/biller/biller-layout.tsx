@@ -10,6 +10,7 @@ import MenuSection from "./menu-section"
 import BillSummary from "./bill-summary"
 import ActionBar from "./action-bar"
 import PrintableBill from "./printable-bill"
+import ReceiptPreviewDialog from "./receipt-preview-dialog"
 import CustomerDetailsDialog from "./customer-details-dialog"
 import { useBillerState } from "@/hooks/use-biller-state"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -32,6 +33,8 @@ export default function BillerLayout() {
   const [isLoading, setIsLoading] = useState(true)
   const [isPrinting, setIsPrinting] = useState(false)
   const [printBillData, setPrintBillData] = useState<{ bill: any; billId?: string; createdAt?: string } | null>(null)
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false)
+  const [previewBillData, setPreviewBillData] = useState<{ bill: any; billId?: string; createdAt?: string } | null>(null)
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false)
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null)
   const [selectedCustomerName, setSelectedCustomerName] = useState<string | null>(null)
@@ -93,6 +96,26 @@ export default function BillerLayout() {
     [toast],
   )
 
+  const handlePreviewClick = useCallback(() => {
+    if (bill.items.length === 0) {
+      toast({
+        title: "Empty bill",
+        description: "Add items before previewing",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Generate a temporary bill ID for preview
+    const tempBillId = `PREVIEW-${Date.now().toString(36)}`
+    setPreviewBillData({
+      bill: bill,
+      billId: tempBillId,
+      createdAt: new Date().toISOString(),
+    })
+    setPreviewDialogOpen(true)
+  }, [bill, toast])
+
   const handlePrintClick = useCallback(async () => {
     if (bill.items.length === 0) {
       toast({
@@ -130,14 +153,16 @@ export default function BillerLayout() {
         createdAt: result.createdAt || new Date().toISOString(),
       })
 
-      // Small delay to ensure state is updated, then print
+      // Print to thermal printer (XP-E200L 80mm)
+      // The receipt is formatted for 80mm thermal paper
+      // Select "XP-E200L" or your thermal printer in the print dialog
       setTimeout(() => {
         try {
           window.print?.()
         } catch (printError) {
           console.error("Print error:", printError)
         }
-      }, 100)
+      }, 150)
 
       toast({
         title: "Bill completed",
@@ -161,6 +186,63 @@ export default function BillerLayout() {
       setIsPrinting(false)
     }
   }, [bill, toast, clearBill, getUser, selectedCustomerId])
+
+  const handlePrintFromPreview = useCallback(async () => {
+    if (!previewBillData) return
+
+    setIsPrinting(true)
+    try {
+      const currentUser = getUser()
+      
+      const billData = {
+        items: previewBillData.bill.items,
+        subtotal: previewBillData.bill.subtotal,
+        tax: previewBillData.bill.tax,
+        discount: previewBillData.bill.discount,
+        total: previewBillData.bill.total,
+        customerId: selectedCustomerId || null,
+        createdBy: currentUser?.id || null,
+      }
+
+      const result = await apiService.createBill(billData)
+
+      setPrintBillData({
+        bill: previewBillData.bill,
+        billId: result.id,
+        createdAt: result.createdAt || new Date().toISOString(),
+      })
+
+      setTimeout(() => {
+        try {
+          window.print?.()
+        } catch (printError) {
+          console.error("Print error:", printError)
+        }
+      }, 150)
+
+      toast({
+        title: "Bill completed",
+        description: `Bill #${result.id} successfully created`,
+      })
+
+      setTimeout(() => {
+        clearBill()
+        setPrintBillData(null)
+        setPreviewBillData(null)
+        setPreviewDialogOpen(false)
+        setSelectedCustomerId(null)
+        setSelectedCustomerName(null)
+      }, 500)
+    } catch (error) {
+      toast({
+        title: "Error submitting bill",
+        description: "Failed to create bill. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsPrinting(false)
+    }
+  }, [previewBillData, toast, clearBill, getUser, selectedCustomerId])
 
   const handleBirthdayDetected = useCallback((customerName: string) => {
     console.log("Birthday detected for:", customerName)
@@ -227,7 +309,7 @@ export default function BillerLayout() {
             className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 object-contain flex-shrink-0"
           />
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-foreground truncate">Restaurant POS</h1>
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-foreground truncate">Paruthimunai Restaurant</h1>
             <p className="text-xs sm:text-sm md:text-base text-muted-foreground hidden sm:block">Press ? for keyboard shortcuts</p>
           </div>
         </div>
@@ -300,7 +382,13 @@ export default function BillerLayout() {
       </div>
 
       {/* Bottom Action Bar */}
-      <ActionBar bill={bill} onSubmit={handlePrintClick} onCancel={clearBill} isSubmitting={isPrinting} />
+      <ActionBar 
+        bill={bill} 
+        onSubmit={handlePrintClick} 
+        onCancel={clearBill}
+        onPreview={handlePreviewClick}
+        isSubmitting={isPrinting} 
+      />
 
       {/* Customer Details Dialog */}
       <CustomerDetailsDialog
@@ -325,6 +413,18 @@ export default function BillerLayout() {
           </div>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Receipt Preview Dialog */}
+      {previewBillData && (
+        <ReceiptPreviewDialog
+          open={previewDialogOpen}
+          onOpenChange={setPreviewDialogOpen}
+          bill={previewBillData.bill}
+          billId={previewBillData.billId}
+          createdAt={previewBillData.createdAt}
+          onPrint={handlePrintFromPreview}
+        />
+      )}
 
       {/* Printable Bill Receipt - Hidden by default, shown only when printing */}
       {printBillData && (

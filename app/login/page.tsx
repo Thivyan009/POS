@@ -135,7 +135,7 @@ export default function LoginPage() {
               priority
             />
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2 text-center">Restaurant POS</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2 text-center">Paruthimunai Restaurant</h1>
           <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6 text-center">Sign in to your account</p>
 
           <form onSubmit={handleLogin} className="space-y-3 sm:space-y-4">

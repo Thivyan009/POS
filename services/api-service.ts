@@ -1224,4 +1224,27 @@ export const apiService = {
       throw new Error(error?.message || error?.details || "Failed to fetch birthday customers")
     }
   },
+
+  sendBirthdaySMS: async (customerIds: string[]) => {
+    try {
+      const response = await fetch("/api/customers/send-birthday-sms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ customerIds }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || errorData.details || "Failed to send SMS")
+      }
+
+      const data = await response.json()
+      return data
+    } catch (error: any) {
+      console.error("Error sending birthday SMS:", error)
+      throw new Error(error?.message || "Failed to send birthday SMS")
+    }
+  },
 }

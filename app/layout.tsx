@@ -11,7 +11,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Restaurant POS System",
+  title: "Paruthimunai Restaurant",
   description: "Production-grade POS frontend for restaurant billing",
   viewport: {
     width: "device-width",

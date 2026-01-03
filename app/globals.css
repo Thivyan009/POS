@@ -151,16 +151,220 @@
     }
   }
   
-  /* Hide printable receipt on screen */
+  /* Hide printable receipt on screen (except in preview) */
   .printable-receipt {
     display: none;
   }
   
-  /* Print styles for bills */
+  /* Show receipt in preview dialog */
+  .receipt-preview-container .printable-receipt {
+    display: block !important;
+  }
+  
+  .receipt-preview-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    overflow-x: auto;
+  }
+  
+  .receipt-preview-container .thermal-receipt {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+  }
+  
+  /* Thermal Receipt Styles */
+  .thermal-receipt {
+    width: 80mm;
+    max-width: 80mm;
+    margin: 0 auto;
+    padding: 8mm 5mm;
+    background: white;
+    color: black;
+    font-family: 'Courier New', monospace;
+    font-size: 10pt;
+    line-height: 1.4;
+  }
+  
+  .receipt-header {
+    text-align: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 2px dashed #000;
+  }
+  
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+  
+  .restaurant-logo {
+    max-width: 60px;
+    max-height: 60px;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  
+  .restaurant-name {
+    font-size: 16pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 8px 0 4px 0;
+  }
+  
+  .receipt-info {
+    margin-bottom: 12px;
+    font-size: 9pt;
+  }
+  
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  
+  .info-label {
+    color: #333;
+  }
+  
+  .info-value {
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+  }
+  
+  .receipt-divider {
+    border-top: 1px dashed #000;
+    margin: 12px 0;
+  }
+  
+  .receipt-items {
+    margin-bottom: 12px;
+  }
+  
+  .items-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 9pt;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #000;
+    margin-bottom: 8px;
+  }
+  
+  .item-col-name {
+    flex: 1;
+    text-align: left;
+  }
+  
+  .item-col-qty {
+    width: 30px;
+    text-align: center;
+  }
+  
+  .item-col-price {
+    width: 70px;
+    text-align: right;
+  }
+  
+  .item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    font-size: 9pt;
+  }
+  
+  .item-details {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .item-name {
+    font-weight: 500;
+    word-wrap: break-word;
+  }
+  
+  .item-tax {
+    font-size: 8pt;
+    color: #666;
+    margin-top: 2px;
+  }
+  
+  .item-qty {
+    width: 30px;
+    text-align: center;
+    font-weight: 500;
+  }
+  
+  .item-total {
+    width: 70px;
+    text-align: right;
+    font-weight: 600;
+  }
+  
+  .receipt-totals {
+    margin-bottom: 16px;
+    font-size: 9pt;
+  }
+  
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  
+  .total-label {
+    color: #333;
+  }
+  
+  .total-value {
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+  }
+  
+  .discount-row {
+    color: #d32f2f;
+  }
+  
+  .final-total {
+    border-top: 2px solid #000;
+    padding-top: 8px;
+    margin-top: 8px;
+    font-size: 12pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .receipt-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 16px;
+  }
+  
+  .footer-divider {
+    border-top: 1px dashed #000;
+    margin-bottom: 12px;
+  }
+  
+  .footer-text {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+  
+  /* Print styles for thermal printer (80mm) */
   @media print {
     @page {
-      size: A4;
-      margin: 0.5cm;
+      size: 80mm auto;
+      margin: 0;
     }
     
     /* Hide everything by default */
@@ -188,6 +392,22 @@
       visibility: visible !important;
     }
     
+    .thermal-receipt {
+      width: 80mm !important;
+      max-width: 80mm !important;
+      margin: 0 auto !important;
+      padding: 8mm 5mm !important;
+      box-shadow: none !important;
+    }
+    
+    /* Optimize images for thermal printing */
+    .restaurant-logo {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      image-rendering: -webkit-optimize-contrast !important;
+      image-rendering: crisp-edges !important;
+    }
+    
     /* Hide all other elements */
     header,
     nav,
@@ -199,6 +419,12 @@
     .print-bill:not(.printable-receipt) {
       display: none !important;
       visibility: hidden !important;
+    }
+    
+    /* Prevent page breaks */
+    .thermal-receipt {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
     }
   }
 }

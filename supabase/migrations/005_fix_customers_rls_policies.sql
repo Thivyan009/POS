@@ -30,3 +30,4 @@ CREATE POLICY "Allow public delete access to customers"
   ON customers FOR DELETE
   USING (true);
 
+

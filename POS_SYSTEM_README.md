@@ -238,7 +238,17 @@ Replace mock implementations with actual API endpoints.
 ```env
 NEXT_PUBLIC_API_BASE_URL=https://api.restaurant.com
 NEXT_PUBLIC_WHATSAPP_API_KEY=xxx
+
+# Text.lk SMS Configuration (for birthday SMS)
+TEXT_LK_API_TOKEN=your_textlk_api_token
+TEXT_LK_SENDER_ID=YourRestaurantName
 ```
+
+**Setting up Text.lk SMS:**
+1. Register at [Text.lk](https://app.text.lk/register/)
+2. Get your API Token from the Developers section in your dashboard
+3. Request a Sender ID from the "Sender ID" section (approval takes a few hours)
+4. Add both values to your `.env.local` file
 
 ### Build & Deploy
 ```bash
