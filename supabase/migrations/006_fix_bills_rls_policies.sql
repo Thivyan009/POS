@@ -49,3 +49,4 @@ CREATE POLICY "Allow public delete access to bill_items"
   ON bill_items FOR DELETE
   USING (true);
 
+

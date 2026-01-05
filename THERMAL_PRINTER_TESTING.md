@@ -74,3 +74,4 @@ You can test the receipt format in several ways:
 - [ ] Print preview shows correct formatting
 - [ ] PDF export works correctly
 
+

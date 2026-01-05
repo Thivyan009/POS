@@ -42,3 +42,4 @@ Run the migration SQL to fix the RLS policies for the `bills` and `bill_items` t
 
 This matches the pattern used for the customers table.
 
+

@@ -33,3 +33,4 @@ WHERE table_name = 'customers'
 -- DELETE FROM customers WHERE phone = '+94123456789';
 
 
+
