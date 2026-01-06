@@ -38,6 +38,7 @@ export interface Bill {
   customer_id?: string | null
   created_at: string
   created_by?: string
+  created_by_email?: string | null
 }
 
 export interface User {

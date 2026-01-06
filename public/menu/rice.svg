@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <defs>
+    <linearGradient id="riceBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6d365"/>
+      <stop offset="1" stop-color="#fda085"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" rx="24" fill="url(#riceBg)"/>
+  <ellipse cx="140" cy="138" rx="80" ry="32" fill="#ffffff" opacity="0.95"/>
+  <ellipse cx="140" cy="132" rx="64" ry="22" fill="#fff4d6"/>
+  <path d="M90 122 Q140 78 190 122" fill="#ffe6b3"/>
+  <path d="M82 130 Q140 92 198 130" fill="none" stroke="#f0c36a" stroke-width="5" stroke-linecap="round"/>
+  <text x="24" y="52" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="26" font-weight="700" fill="#4a1f00">
+    Rice Dishes
+  </text>
+  <text x="24" y="82" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="16" fill="#4a1f00" opacity="0.85">
+    Fried rice &amp; biryani
+  </text>
+</svg>
+
+

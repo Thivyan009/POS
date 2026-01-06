@@ -28,12 +28,24 @@ import { useToast } from "@/hooks/use-toast"
 import type { Bill } from "@/lib/types"
 import BillDetailsDialog from "./bill-details-dialog"
 import { Receipt } from "lucide-react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface RecentBillsProps {
   dateRange?: { from?: Date; to?: Date }
 }
 
 const BILLS_PER_PAGE = 20
+
+interface BillerOption {
+  id: string
+  email: string
+}
 
 export default function RecentBills({ dateRange }: RecentBillsProps) {
   const [bills, setBills] = useState<Bill[]>([])
@@ -43,11 +55,31 @@ export default function RecentBills({ dateRange }: RecentBillsProps) {
   const [totalBills, setTotalBills] = useState(0)
   const [selectedBill, setSelectedBill] = useState<Bill | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [billers, setBillers] = useState<BillerOption[]>([])
+  const [selectedBillerId, setSelectedBillerId] = useState<string>("all")
   const { toast } = useToast()
 
   useEffect(() => {
     setCurrentPage(1) // Reset to first page when date range changes
   }, [dateRange])
+
+  useEffect(() => {
+    const loadBillers = async () => {
+      try {
+        const result = await apiService.getBillers()
+        setBillers(result)
+      } catch (error) {
+        console.error("Error loading billers:", error)
+        toast({
+          title: "Error",
+          description: "Failed to load billers for filtering",
+          variant: "destructive",
+        })
+      }
+    }
+
+    loadBillers()
+  }, [toast])
 
   useEffect(() => {
     const loadBills = async () => {
@@ -58,7 +90,8 @@ export default function RecentBills({ dateRange }: RecentBillsProps) {
           currentPage,
           BILLS_PER_PAGE,
           dateRange?.from,
-          dateRange?.to
+          dateRange?.to,
+          selectedBillerId !== "all" ? selectedBillerId : undefined
         )
         setBills(result.bills as Bill[])
         setTotalBills(result.total || 0)
@@ -77,7 +110,7 @@ export default function RecentBills({ dateRange }: RecentBillsProps) {
       }
     }
     loadBills()
-  }, [dateRange, currentPage, toast])
+  }, [dateRange, currentPage, selectedBillerId, toast])
 
   const handleBillClick = (bill: Bill) => {
     setSelectedBill(bill)
@@ -96,13 +129,37 @@ export default function RecentBills({ dateRange }: RecentBillsProps) {
     <>
       <Card>
         <CardHeader className="p-3 sm:p-6">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base sm:text-lg">Bill History</CardTitle>
-            {!isLoading && !error && (
-              <span className="text-sm text-muted-foreground">
-                {totalBills} {totalBills === 1 ? "bill" : "bills"}
-              </span>
-            )}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center justify-between sm:justify-start gap-2">
+              <CardTitle className="text-base sm:text-lg">Bill History</CardTitle>
+              {!isLoading && !error && (
+                <span className="text-sm text-muted-foreground">
+                  {totalBills} {totalBills === 1 ? "bill" : "bills"}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <p className="text-xs sm:text-sm text-muted-foreground">Filter by biller:</p>
+              <Select
+                value={selectedBillerId}
+                onValueChange={(value) => {
+                  setSelectedBillerId(value)
+                  setCurrentPage(1)
+                }}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="All billers" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All billers</SelectItem>
+                  {billers.map((biller) => (
+                    <SelectItem key={biller.id} value={biller.id}>
+                      {biller.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="p-3 sm:p-6">
@@ -145,6 +202,7 @@ export default function RecentBills({ dateRange }: RecentBillsProps) {
                     <TableRow>
                       <TableHead className="text-xs sm:text-sm">Bill ID</TableHead>
                       <TableHead className="text-xs sm:text-sm">Status</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden lg:table-cell">Biller</TableHead>
                       <TableHead className="text-xs sm:text-sm hidden sm:table-cell">Items</TableHead>
                       <TableHead className="text-right text-xs sm:text-sm hidden md:table-cell">Subtotal</TableHead>
                       <TableHead className="text-right text-xs sm:text-sm hidden lg:table-cell">Tax</TableHead>
@@ -170,6 +228,9 @@ export default function RecentBills({ dateRange }: RecentBillsProps) {
                           >
                             {bill.status.charAt(0).toUpperCase() + bill.status.slice(1)}
                           </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs sm:text-sm hidden lg:table-cell">
+                          {bill.created_by_email || "Unknown"}
                         </TableCell>
                         <TableCell className="text-xs sm:text-sm hidden sm:table-cell">
                           {bill.items.length}

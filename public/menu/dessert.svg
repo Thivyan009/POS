@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <defs>
+    <linearGradient id="dessertBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff9a9e"/>
+      <stop offset="1" stop-color="#fecfef"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" rx="24" fill="url(#dessertBg)"/>
+  <circle cx="90" cy="120" r="48" fill="#fff7e6" opacity="0.9"/>
+  <circle cx="140" cy="110" r="38" fill="#ffe0e0" opacity="0.95"/>
+  <path d="M70 130 Q90 70 140 90 T210 110" fill="none" stroke="#ff6b81" stroke-width="8" stroke-linecap="round"/>
+  <text x="24" y="52" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="26" font-weight="700" fill="#3b0b22">
+    Desserts
+  </text>
+  <text x="24" y="82" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="16" fill="#3b0b22" opacity="0.85">
+    Sweet treats &amp; specials
+  </text>
+</svg>
+
+

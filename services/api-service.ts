@@ -403,7 +403,7 @@ export const apiService = {
     }
   },
 
-  getBills: async (page = 1, limit = 20, fromDate?: Date, toDate?: Date) => {
+  getBills: async (page = 1, limit = 20, fromDate?: Date, toDate?: Date, billerId?: string) => {
     try {
       let query = supabase
         .from("bills")
@@ -420,10 +420,35 @@ export const apiService = {
         endDate.setHours(23, 59, 59, 999)
         query = query.lte("created_at", endDate.toISOString())
       }
+      if (billerId) {
+        query = query.eq("created_by", billerId)
+      }
 
       const { data, error, count } = await query
 
       if (error) throw error
+
+      // Preload biller (user) emails for created_by
+      const billerIds = Array.from(
+        new Set((data || []).map((bill) => bill.created_by).filter((id): id is string => Boolean(id))),
+      )
+
+      let billerEmailMap: Record<string, string> = {}
+      if (billerIds.length > 0) {
+        const { data: users, error: usersError } = await supabase
+          .from("users")
+          .select("id, email")
+          .in("id", billerIds)
+
+        if (usersError) {
+          console.error("Error fetching biller emails:", usersError)
+        } else {
+          billerEmailMap = (users || []).reduce((acc: Record<string, string>, user) => {
+            acc[user.id] = user.email
+            return acc
+          }, {})
+        }
+      }
 
       // Fetch bill items for each bill
       const billsWithItems = await Promise.all(
@@ -442,6 +467,7 @@ export const apiService = {
             status: bill.status,
             customer_id: bill.customer_id,
             created_by: bill.created_by,
+            created_by_email: bill.created_by ? billerEmailMap[bill.created_by] || null : null,
             created_at: bill.created_at,
             createdAt: bill.created_at, // Keep for backwards compatibility
             items: (items || []).map(transformBillItem),
@@ -534,12 +560,72 @@ export const apiService = {
         salesByHour[hour] = (salesByHour[hour] || 0) + Number(bill.total)
       })
 
-      // Convert to array and sort by hour
-      return Object.entries(salesByHour)
-        .map(([hour, sales]) => ({ hour, sales }))
-        .sort((a, b) => a.hour.localeCompare(b.hour))
+      // Ensure full 24-hour coverage so the chart always renders consistently
+      const result: Array<{ hour: string; sales: number }> = []
+      for (let i = 0; i < 24; i++) {
+        const hourLabel = `${String(i).padStart(2, "0")}:00`
+        result.push({ hour: hourLabel, sales: salesByHour[hourLabel] || 0 })
+      }
+
+      return result
     } catch (error) {
       console.error("Error fetching sales by hour:", error)
+      throw error
+    }
+  },
+
+  // Biller-specific analytics
+  getBillerDailyStats: async (billerId: string, date?: Date) => {
+    try {
+      const targetDate = date || new Date()
+      const startOfDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate())
+      const endOfDay = new Date(startOfDay)
+      endOfDay.setHours(23, 59, 59, 999)
+
+      const { data, error } = await supabase
+        .from("bills")
+        .select("id, subtotal, tax, discount, total, created_at")
+        .eq("created_by", billerId)
+        .gte("created_at", startOfDay.toISOString())
+        .lte("created_at", endOfDay.toISOString())
+        .order("created_at", { ascending: false })
+
+      if (error) throw error
+
+      const bills = data || []
+
+      const totals = bills.reduce(
+        (acc, bill) => {
+          acc.grossSales += Number(bill.subtotal)
+          acc.taxCollected += Number(bill.tax)
+          acc.discountGiven += Number(bill.discount)
+          acc.netSales += Number(bill.total)
+          return acc
+        },
+        { grossSales: 0, taxCollected: 0, discountGiven: 0, netSales: 0 },
+      )
+
+      const stats = {
+        date: startOfDay.toISOString(),
+        totalSales: totals.netSales,
+        grossSales: totals.grossSales,
+        taxCollected: totals.taxCollected,
+        discountGiven: totals.discountGiven,
+        billsCount: bills.length,
+        averageBill: bills.length ? totals.netSales / bills.length : 0,
+        bills: bills.map((bill) => ({
+          id: bill.id,
+          subtotal: Number(bill.subtotal),
+          tax: Number(bill.tax),
+          discount: Number(bill.discount),
+          total: Number(bill.total),
+          createdAt: bill.created_at,
+        })),
+      }
+
+      return stats
+    } catch (error) {
+      console.error("Error fetching biller daily stats:", error)
       throw error
     }
   },

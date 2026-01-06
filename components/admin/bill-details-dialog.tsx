@@ -54,15 +54,21 @@ export default function BillDetailsDialog({
           <div className="space-y-6">
             {/* Bill Information */}
             <div className="space-y-2">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div className="space-y-1">
                   <p className="text-muted-foreground">Bill ID</p>
-                  <p className="font-medium font-mono text-xs">{bill.id}</p>
+                  <p className="font-medium font-mono text-xs break-all">{bill.id}</p>
                 </div>
-                <div>
+                <div className="space-y-1">
                   <p className="text-muted-foreground">Date & Time</p>
                   <p className="font-medium">
                     {format(new Date(bill.created_at), "PPpp")}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-muted-foreground">Billed By</p>
+                  <p className="font-medium">
+                    {bill.created_by_email || "Unknown biller"}
                   </p>
                 </div>
               </div>

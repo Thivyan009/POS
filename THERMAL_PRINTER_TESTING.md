@@ -75,3 +75,5 @@ You can test the receipt format in several ways:
 - [ ] PDF export works correctly
 
 
+
+

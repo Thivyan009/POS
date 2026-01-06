@@ -16,3 +16,5 @@ COMMENT ON COLUMN menu_items.image_url IS 'URL or data URL of the menu item imag
 
 
 
+
+

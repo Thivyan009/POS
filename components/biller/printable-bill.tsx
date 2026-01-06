@@ -132,7 +132,7 @@ export default function PrintableBill({ bill, billId, createdAt }: PrintableBill
         <div className="receipt-footer">
           <div className="footer-divider"></div>
           <p className="footer-text">Thank you, come again!</p>
-          <p className="footer-text">Phone: +94 77 895 9431</p>
+          <p className="footer-text">Phone: +94 77 274 8689</p>
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ import MenuSection from "./menu-section"
 import BillSummary from "./bill-summary"
 import ActionBar from "./action-bar"
 import PrintableBill from "./printable-bill"
+import BillerDashboard from "./biller-dashboard"
 import ReceiptPreviewDialog from "./receipt-preview-dialog"
 import CustomerDetailsDialog from "./customer-details-dialog"
 import { useBillerState } from "@/hooks/use-biller-state"
@@ -40,6 +41,7 @@ export default function BillerLayout() {
   const [selectedCustomerName, setSelectedCustomerName] = useState<string | null>(null)
   const [birthdayAlertOpen, setBirthdayAlertOpen] = useState(false)
   const [birthdayCustomerName, setBirthdayCustomerName] = useState("")
+  const [currentView, setCurrentView] = useState<"billing" | "dashboard">("billing")
 
   const { bill, addItem, removeItem, updateQuantity, clearBill, applyDiscount } = useBillerState()
 
@@ -321,74 +323,108 @@ export default function BillerLayout() {
         </button>
       </div>
 
+      {/* View Navigation */}
+      <div className="border-b border-border bg-card px-3 sm:px-4 md:px-5">
+        <div className="flex gap-2 py-2">
+          <button
+            type="button"
+            onClick={() => setCurrentView("billing")}
+            className={`px-3 py-1.5 text-xs sm:text-sm rounded-md border ${
+              currentView === "billing"
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80"
+            }`}
+          >
+            Billing
+          </button>
+          <button
+            type="button"
+            onClick={() => setCurrentView("dashboard")}
+            className={`px-3 py-1.5 text-xs sm:text-sm rounded-md border ${
+              currentView === "dashboard"
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80"
+            }`}
+          >
+            Today&apos;s Sales
+          </button>
+        </div>
+      </div>
+
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden w-full">
-        {/* Left Panel - Menu (Full width on mobile, 65% on tablet+, 70% on desktop) */}
-        <div className="flex-1 md:w-[65%] lg:w-[70%] flex flex-col overflow-hidden min-w-0">
-          <MenuSection
-            categories={categories}
-            items={filteredItems}
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-            onAddItem={handleAddItem}
-          />
-        </div>
+      {currentView === "billing" ? (
+        <>
+          <div className="flex flex-1 overflow-hidden w-full">
+            {/* Left Panel - Menu (Full width on mobile, 65% on tablet+, 70% on desktop) */}
+            <div className="flex-1 md:w-[65%] lg:w-[70%] flex flex-col overflow-hidden min-w-0">
+              <MenuSection
+                categories={categories}
+                items={filteredItems}
+                selectedCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+                onAddItem={handleAddItem}
+              />
+            </div>
 
-        {/* Right Panel - Bill Summary (Hidden on mobile, 35% on tablet+, 30% on desktop) */}
-        <div className="hidden md:flex md:w-[35%] lg:w-[30%] min-w-0 flex-shrink-0">
-          <BillSummary
+            {/* Right Panel - Bill Summary (Hidden on mobile, 35% on tablet+, 30% on desktop) */}
+            <div className="hidden md:flex md:w-[35%] lg:w-[30%] min-w-0 flex-shrink-0">
+              <BillSummary
+                bill={bill}
+                onRemoveItem={removeItem}
+                onUpdateQuantity={updateQuantity}
+                onApplyDiscount={applyDiscount}
+                onAddCustomer={() => setCustomerDialogOpen(true)}
+                customerName={selectedCustomerName}
+              />
+            </div>
+          </div>
+
+          {/* Mobile Bill Summary Button - Only visible on mobile */}
+          <div className="md:hidden fixed bottom-24 sm:bottom-28 left-0 right-0 px-3 sm:px-4 z-40">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button
+                  className="w-full bg-primary text-primary-foreground font-bold shadow-lg h-12 sm:h-14 text-sm sm:text-base"
+                  size="lg"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    View Bill
+                    {bill.items.length > 0 && (
+                      <Badge variant="secondary" className="bg-primary-foreground text-primary text-xs sm:text-sm">
+                        {bill.items.length}
+                      </Badge>
+                    )}
+                    {bill.total > 0 && (
+                      <span className="font-bold text-sm sm:text-base">LKR {bill.total.toFixed(2)}</span>
+                    )}
+                  </span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="h-[85vh] p-0 max-h-[85vh]">
+                <BillSummary
+                  bill={bill}
+                  onRemoveItem={removeItem}
+                  onUpdateQuantity={updateQuantity}
+                  onApplyDiscount={applyDiscount}
+                  onAddCustomer={() => setCustomerDialogOpen(true)}
+                  customerName={selectedCustomerName}
+                />
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Bottom Action Bar */}
+          <ActionBar
             bill={bill}
-            onRemoveItem={removeItem}
-            onUpdateQuantity={updateQuantity}
-            onApplyDiscount={applyDiscount}
-            onAddCustomer={() => setCustomerDialogOpen(true)}
-            customerName={selectedCustomerName}
+            onSubmit={handlePrintClick}
+            onCancel={clearBill}
+            onPreview={handlePreviewClick}
+            isSubmitting={isPrinting}
           />
-        </div>
-      </div>
-
-      {/* Mobile Bill Summary Button - Only visible on mobile */}
-      <div className="md:hidden fixed bottom-24 sm:bottom-28 left-0 right-0 px-3 sm:px-4 z-40">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button 
-              className="w-full bg-primary text-primary-foreground font-bold shadow-lg h-12 sm:h-14 text-sm sm:text-base"
-              size="lg"
-            >
-              <span className="flex items-center justify-center gap-2">
-                View Bill
-                {bill.items.length > 0 && (
-                  <Badge variant="secondary" className="bg-primary-foreground text-primary text-xs sm:text-sm">
-                    {bill.items.length}
-                  </Badge>
-                )}
-                {bill.total > 0 && (
-                  <span className="font-bold text-sm sm:text-base">LKR {bill.total.toFixed(2)}</span>
-                )}
-              </span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="bottom" className="h-[85vh] p-0 max-h-[85vh]">
-            <BillSummary
-              bill={bill}
-              onRemoveItem={removeItem}
-              onUpdateQuantity={updateQuantity}
-              onApplyDiscount={applyDiscount}
-              onAddCustomer={() => setCustomerDialogOpen(true)}
-              customerName={selectedCustomerName}
-            />
-          </SheetContent>
-        </Sheet>
-      </div>
-
-      {/* Bottom Action Bar */}
-      <ActionBar 
-        bill={bill} 
-        onSubmit={handlePrintClick} 
-        onCancel={clearBill}
-        onPreview={handlePreviewClick}
-        isSubmitting={isPrinting} 
-      />
+        </>
+      ) : (
+        <BillerDashboard />
+      )}
 
       {/* Customer Details Dialog */}
       <CustomerDetailsDialog

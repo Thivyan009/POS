@@ -87,7 +87,7 @@ USING (bucket_id = 'Menu Images'::text);
 
 -- Create insert policy (for service role)
 CREATE POLICY "Service role insert access"
-ON storage.objects FOR INSERT
+ON storage.objects FOR INnSERT
 WITH CHECK (bucket_id = 'Menu Images'::text);
 
 -- Create delete policy (for service role)

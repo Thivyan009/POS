@@ -8,7 +8,8 @@
     "lint": "eslint .",
     "start": "next start",
     "db:check": "node scripts/check-db-connection.js",
-    "db:migrate": "node scripts/run-migration.js"
+    "db:migrate": "node scripts/run-migration.js",
+    "menu:images": "node --experimental-modules scripts/generate-menu-images.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -73,6 +74,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "dotenv": "^17.2.3",
+    "openai": "^4.104.0",
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",

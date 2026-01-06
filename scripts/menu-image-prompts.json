@@ -1,0 +1,489 @@
+[
+  {
+    "name": "Fruit salad with ice cream",
+    "fileName": "fruit-salad-with-ice-cream.jpg",
+    "prompt": "A close-up photo of a colorful mixed fruit salad in a glass bowl topped with a scoop of vanilla ice cream, shot on a wooden restaurant table, soft natural lighting, high resolution, realistic food photography."
+  },
+  {
+    "name": "Cake with ice cream",
+    "fileName": "cake-with-ice-cream.jpg",
+    "prompt": "A slice of chocolate cake on a white plate served with a scoop of vanilla ice cream and chocolate sauce drizzle, restaurant style, shallow depth of field, realistic food photo."
+  },
+  {
+    "name": "Watalappan",
+    "fileName": "watalappan.jpg",
+    "prompt": "A Sri Lankan watalappan dessert served in a small bowl, caramel color custard topped with cashew nuts, on a simple restaurant table, warm lighting, realistic high quality photo."
+  },
+  {
+    "name": "Gulab jamun (2 pcs)",
+    "fileName": "gulab-jamun-2pcs.jpg",
+    "prompt": "Two gulab jamun soaked in sugar syrup in a small white bowl, glossy texture, garnished with pistachio crumbs, restaurant presentation, realistic photography."
+  },
+  {
+    "name": "Kesari",
+    "fileName": "kesari.jpg",
+    "prompt": "A square piece of orange-colored rava kesari on a white plate, garnished with cashews and raisins, South Asian dessert, realistic food photograph."
+  },
+  {
+    "name": "Normal tea",
+    "fileName": "normal-tea.jpg",
+    "prompt": "A simple glass cup of hot black tea with light steam, placed on a saucer on a cafe table, realistic photo."
+  },
+  {
+    "name": "Special tea",
+    "fileName": "special-tea.jpg",
+    "prompt": "A fancy glass of milk tea with foam on top, spices visible, on a wooden table in a Sri Lankan restaurant, realistic food photography."
+  },
+  {
+    "name": "Nescafe",
+    "fileName": "nescafe.jpg",
+    "prompt": "A mug of instant coffee with a light layer of foam, spoon on the saucer, cafe style, realistic photo."
+  },
+  {
+    "name": "Milk tea",
+    "fileName": "milk-tea.jpg",
+    "prompt": "A cup of Sri Lankan milk tea with rich brown color and a bit of steam, on a table with blurred restaurant background, realistic."
+  },
+  {
+    "name": "Choco milk shake",
+    "fileName": "choco-milk-shake.jpg",
+    "prompt": "A tall glass of chocolate milkshake topped with whipped cream and chocolate syrup, with a straw, on a cafe table, realistic photo."
+  },
+  {
+    "name": "Vanilla milk shake",
+    "fileName": "vanilla-milk-shake.jpg",
+    "prompt": "A tall glass of vanilla milkshake topped with whipped cream and colorful sprinkles, with a straw, realistic high quality food photo."
+  },
+  {
+    "name": "Lunch Veg (Normal)",
+    "fileName": "lunch-veg-normal.jpg",
+    "prompt": "A Sri Lankan vegetarian lunch packet style plate with rice, mixed vegetable curries and salad, neatly arranged, restaurant presentation, realistic."
+  },
+  {
+    "name": "Lunch Egg (Normal)",
+    "fileName": "lunch-egg-normal.jpg",
+    "prompt": "A Sri Lankan lunch plate with white rice, egg curry, dhal curry and a few vegetable sides, realistic food photo."
+  },
+  {
+    "name": "Lunch Fish (Normal)",
+    "fileName": "lunch-fish-normal.jpg",
+    "prompt": "A Sri Lankan rice and fish curry lunch plate with white rice, spicy fish curry and side vegetables, restaurant style, realistic photo."
+  },
+  {
+    "name": "Lunch Chicken (Normal)",
+    "fileName": "lunch-chicken-normal.jpg",
+    "prompt": "A Sri Lankan chicken rice plate with steamed rice, chicken curry and mixed vegetable curries, served on a white plate, realistic photography."
+  },
+  {
+    "name": "White rice with cutlet",
+    "fileName": "white-rice-with-cutlet.jpg",
+    "prompt": "A simple plate of white rice served with a golden brown fish cutlet and a small portion of salad, Sri Lankan style, realistic photo."
+  },
+  {
+    "name": "Lunch Veg (Premium)",
+    "fileName": "lunch-veg-premium.jpg",
+    "prompt": "A premium vegetarian lunch plate with rice, multiple colorful vegetable curries, a cutlet and fresh fruit slices, restaurant style, realistic."
+  },
+  {
+    "name": "Lunch Egg (Premium)",
+    "fileName": "lunch-egg-premium.jpg",
+    "prompt": "A Sri Lankan premium egg lunch plate with rice, egg curry, cutlet and fruit garnish, realistic high quality food photograph."
+  },
+  {
+    "name": "Lunch Fish (Premium)",
+    "fileName": "lunch-fish-premium.jpg",
+    "prompt": "A premium fish rice plate with well-presented fish curry, rice, cutlet and fruit slices, on a white plate, realistic photo."
+  },
+  {
+    "name": "Lunch Chicken (Premium)",
+    "fileName": "lunch-chicken-premium.jpg",
+    "prompt": "A premium Sri Lankan chicken lunch plate with nicely plated chicken curry, rice, cutlet and fruit, restaurant style, realistic."
+  },
+  {
+    "name": "Fried rice Veg (Normal)",
+    "fileName": "fried-rice-veg-normal.jpg",
+    "prompt": "A plate of vegetable fried rice with colorful vegetables, spring onions on top, Chinese restaurant style, realistic food photo."
+  },
+  {
+    "name": "Fried rice Egg (Normal)",
+    "fileName": "fried-rice-egg-normal.jpg",
+    "prompt": "Egg fried rice on a white plate, visible scrambled egg pieces and vegetables, Asian restaurant style, realistic."
+  },
+  {
+    "name": "Fried rice Chicken (Normal)",
+    "fileName": "fried-rice-chicken-normal.jpg",
+    "prompt": "Chicken fried rice served on a plate with small chicken pieces and vegetables, garnished with spring onion, realistic food photography."
+  },
+  {
+    "name": "Fried rice Beef (Normal)",
+    "fileName": "fried-rice-beef-normal.jpg",
+    "prompt": "Beef fried rice with thin sliced beef pieces mixed into the rice, served on a restaurant plate, realistic photo."
+  },
+  {
+    "name": "Fried rice Seafood (Normal)",
+    "fileName": "fried-rice-seafood-normal.jpg",
+    "prompt": "Seafood fried rice with prawns and squid pieces visible, garnished with lemon wedge, realistic Asian food photo."
+  },
+  {
+    "name": "Fried rice Mutton (Normal)",
+    "fileName": "fried-rice-mutton-normal.jpg",
+    "prompt": "Mutton fried rice with chunks of mutton and vegetables, on a white plate, realistic restaurant style photo."
+  },
+  {
+    "name": "Fried rice Mix (Normal)",
+    "fileName": "fried-rice-mix-normal.jpg",
+    "prompt": "Mixed fried rice with chicken, prawn and vegetables, colorful and appetizing, realistic photo."
+  },
+  {
+    "name": "Fried rice Veg (Full)",
+    "fileName": "fried-rice-veg-full.jpg",
+    "prompt": "A large sharing portion of vegetable fried rice served in a big oval dish, overhead restaurant style shot, realistic."
+  },
+  {
+    "name": "Fried rice Egg (Full)",
+    "fileName": "fried-rice-egg-full.jpg",
+    "prompt": "A big serving of egg fried rice in a large plate for sharing, Asian style, realistic food photography."
+  },
+  {
+    "name": "Fried rice Chicken (Full)",
+    "fileName": "fried-rice-chicken-full.jpg",
+    "prompt": "A generous family-size plate of chicken fried rice with visible chicken pieces, realistic overhead photo."
+  },
+  {
+    "name": "Fried rice Beef (Full)",
+    "fileName": "fried-rice-beef-full.jpg",
+    "prompt": "A large serving platter of beef fried rice placed at the center of a restaurant table, realistic image."
+  },
+  {
+    "name": "Fried rice Seafood (Full)",
+    "fileName": "fried-rice-seafood-full.jpg",
+    "prompt": "A big dish of seafood fried rice with prawns and squid, buffet style, realistic high quality photo."
+  },
+  {
+    "name": "Fried rice Mutton (Full)",
+    "fileName": "fried-rice-mutton-full.jpg",
+    "prompt": "A large sharing plate of mutton fried rice with generous meat pieces, realistic restaurant photograph."
+  },
+  {
+    "name": "Fried rice Mix (Full)",
+    "fileName": "fried-rice-mix-full.jpg",
+    "prompt": "Mixed meat fried rice, full family-size portion, colorful and well garnished, realistic photo."
+  },
+  {
+    "name": "Koththu Veg (Normal)",
+    "fileName": "koththu-veg-normal.jpg",
+    "prompt": "A plate of Sri Lankan vegetable koththu rotti, chopped roti with colorful vegetables, served on a metal plate, realistic street food photo."
+  },
+  {
+    "name": "Koththu Egg (Normal)",
+    "fileName": "koththu-egg-normal.jpg",
+    "prompt": "Egg koththu rotti on a plate, visible pieces of roti and egg, with curry on the side, realistic."
+  },
+  {
+    "name": "Koththu Chicken (Normal)",
+    "fileName": "koththu-chicken-normal.jpg",
+    "prompt": "Chicken koththu rotti with chunks of chicken and vegetables, Sri Lankan restaurant style, realistic photo."
+  },
+  {
+    "name": "Koththu Beef (Normal)",
+    "fileName": "koththu-beef-normal.jpg",
+    "prompt": "Beef koththu rotti served hot on a plate, with curry gravy, realistic food photography."
+  },
+  {
+    "name": "Koththu Seafood (Normal)",
+    "fileName": "koththu-seafood-normal.jpg",
+    "prompt": "Seafood koththu rotti with prawns and squid, on a metal plate, Sri Lankan street food style, realistic."
+  },
+  {
+    "name": "Koththu Mutton (Normal)",
+    "fileName": "koththu-mutton-normal.jpg",
+    "prompt": "Mutton koththu rotti with visible mutton pieces, served with curry on the side, realistic photo."
+  },
+  {
+    "name": "Koththu Mix (Normal)",
+    "fileName": "koththu-mix-normal.jpg",
+    "prompt": "Mixed meat koththu rotti with chicken and seafood, colorful and appetizing, realistic photograph."
+  },
+  {
+    "name": "Koththu Veg (Full)",
+    "fileName": "koththu-veg-full.jpg",
+    "prompt": "A large sharing plate of vegetable koththu rotti, piled high in the center of a metal tray, realistic."
+  },
+  {
+    "name": "Koththu Egg (Full)",
+    "fileName": "koththu-egg-full.jpg",
+    "prompt": "Family-size egg koththu rotti on a big tray, Sri Lankan restaurant style, realistic photo."
+  },
+  {
+    "name": "Koththu Chicken (Full)",
+    "fileName": "koththu-chicken-full.jpg",
+    "prompt": "A large mound of chicken koththu rotti served for sharing, realistic Sri Lankan food photo."
+  },
+  {
+    "name": "Koththu Beef (Full)",
+    "fileName": "koththu-beef-full.jpg",
+    "prompt": "A full portion of beef koththu rotti, large serving, on a restaurant table, realistic."
+  },
+  {
+    "name": "Koththu Seafood (Full)",
+    "fileName": "koththu-seafood-full.jpg",
+    "prompt": "Seafood koththu rotti, large tray with prawns and squid pieces visible, realistic photo."
+  },
+  {
+    "name": "Koththu Mutton (Full)",
+    "fileName": "koththu-mutton-full.jpg",
+    "prompt": "Family-size mutton koththu rotti tray, Sri Lankan restaurant presentation, realistic."
+  },
+  {
+    "name": "Koththu Mix (Full)",
+    "fileName": "koththu-mix-full.jpg",
+    "prompt": "Mixed meat koththu rotti, full portion, colorful and generous, realistic photography."
+  },
+  {
+    "name": "Veg Biryani (Normal)",
+    "fileName": "veg-biryani-normal.jpg",
+    "prompt": "A plate of vegetable biryani with fragrant basmati rice, visible vegetables and fried onions, served with raita, realistic Indian restaurant photo."
+  },
+  {
+    "name": "Egg Biryani (Normal)",
+    "fileName": "egg-biryani-normal.jpg",
+    "prompt": "Egg biryani with boiled eggs on top of spiced rice, garnished with coriander, realistic photo."
+  },
+  {
+    "name": "Paneer Biryani (Normal)",
+    "fileName": "paneer-biryani-normal.jpg",
+    "prompt": "Paneer biryani with cubes of paneer mixed into the rice, served in a handi, realistic food photograph."
+  },
+  {
+    "name": "Chicken Biryani (Normal)",
+    "fileName": "chicken-biryani-normal.jpg",
+    "prompt": "Chicken biryani in a plate with a leg piece on top, garnished with fried onions and coriander, realistic."
+  },
+  {
+    "name": "Beef Biryani (Normal)",
+    "fileName": "beef-biryani-normal.jpg",
+    "prompt": "Beef biryani with tender beef pieces in aromatic rice, Indian restaurant style, realistic photo."
+  },
+  {
+    "name": "Mutton Biryani (Normal)",
+    "fileName": "mutton-biryani-normal.jpg",
+    "prompt": "Mutton biryani with visible mutton pieces and rich masala, served on a white plate, realistic."
+  },
+  {
+    "name": "Seafood Biryani (Normal)",
+    "fileName": "seafood-biryani-normal.jpg",
+    "prompt": "Seafood biryani with prawns and fish pieces, colorful and garnished, realistic Indian food photo."
+  },
+  {
+    "name": "Veg Bucket Biryani (3P)",
+    "fileName": "veg-bucket-biryani-3p.jpg",
+    "prompt": "A metal bucket filled with vegetable biryani, sized for three people, placed on a restaurant table, realistic."
+  },
+  {
+    "name": "Egg Bucket Biryani (3P)",
+    "fileName": "egg-bucket-biryani-3p.jpg",
+    "prompt": "A biryani bucket for three people with egg biryani, boiled eggs visible on top, realistic photo."
+  },
+  {
+    "name": "Paneer Bucket Biryani (3P)",
+    "fileName": "paneer-bucket-biryani-3p.jpg",
+    "prompt": "A sharing bucket of paneer biryani with cubes of paneer and rice, realistic restaurant style."
+  },
+  {
+    "name": "Chicken Bucket Biryani (3P)",
+    "fileName": "chicken-bucket-biryani-3p.jpg",
+    "prompt": "A three person bucket of chicken biryani, bucket style serving with ladle, realistic."
+  },
+  {
+    "name": "Beef Bucket Biryani (3P)",
+    "fileName": "beef-bucket-biryani-3p.jpg",
+    "prompt": "Beef biryani served in a sharing bucket, rich and generous portion, realistic food photograph."
+  },
+  {
+    "name": "Mutton Bucket Biryani (3P)",
+    "fileName": "mutton-bucket-biryani-3p.jpg",
+    "prompt": "Mutton biryani bucket for three, fragrant rice overflowing slightly, realistic photo."
+  },
+  {
+    "name": "Seafood Bucket Biryani (3P)",
+    "fileName": "seafood-bucket-biryani-3p.jpg",
+    "prompt": "Seafood biryani bucket with prawns and fish visible on top, realistic restaurant presentation."
+  },
+  {
+    "name": "Veg Bucket Biryani (5P)",
+    "fileName": "veg-bucket-biryani-5p.jpg",
+    "prompt": "A large bucket of vegetable biryani meant for five people, on a restaurant table, realistic."
+  },
+  {
+    "name": "Egg Bucket Biryani (5P)",
+    "fileName": "egg-bucket-biryani-5p.jpg",
+    "prompt": "Big bucket of egg biryani for five, several boiled eggs on top of colorful rice, realistic photo."
+  },
+  {
+    "name": "Paneer Bucket Biryani (5P)",
+    "fileName": "paneer-bucket-biryani-5p.jpg",
+    "prompt": "Paneer biryani in a large sharing bucket for five, cubes of paneer mixed throughout, realistic."
+  },
+  {
+    "name": "Chicken Bucket Biryani (5P)",
+    "fileName": "chicken-bucket-biryani-5p.jpg",
+    "prompt": "Large bucket of chicken biryani for a group, served on a restaurant table, realistic food photograph."
+  },
+  {
+    "name": "Beef Bucket Biryani (5P)",
+    "fileName": "beef-bucket-biryani-5p.jpg",
+    "prompt": "Group serving bucket of beef biryani, aromatic rice and beef pieces visible, realistic."
+  },
+  {
+    "name": "Mutton Bucket Biryani (5P)",
+    "fileName": "mutton-bucket-biryani-5p.jpg",
+    "prompt": "Large sharing bucket of mutton biryani for five, garnished with fried onions, realistic photo."
+  },
+  {
+    "name": "Seafood Bucket Biryani (5P)",
+    "fileName": "seafood-bucket-biryani-5p.jpg",
+    "prompt": "Seafood biryani bucket for five with prawns and fish on top, restaurant style, realistic."
+  },
+  {
+    "name": "Paneer Nasi Goreng",
+    "fileName": "paneer-nasi-goreng.jpg",
+    "prompt": "Indonesian style nasi goreng fried rice with paneer cubes, fried egg on top, realistic Asian food photo."
+  },
+  {
+    "name": "Chicken Nasi Goreng",
+    "fileName": "chicken-nasi-goreng.jpg",
+    "prompt": "Chicken nasi goreng with fried egg and prawn crackers on the side, rustic plate, realistic."
+  },
+  {
+    "name": "Beef Nasi Goreng",
+    "fileName": "beef-nasi-goreng.jpg",
+    "prompt": "Beef nasi goreng with thin beef slices, fried rice, and garnish, realistic photograph."
+  },
+  {
+    "name": "Seafood Nasi Goreng",
+    "fileName": "seafood-nasi-goreng.jpg",
+    "prompt": "Seafood nasi goreng with prawns and squid, fried egg on top, realistic street food style photo."
+  },
+  {
+    "name": "Mix Nasi Goreng",
+    "fileName": "mix-nasi-goreng.jpg",
+    "prompt": "Mixed meat nasi goreng with chicken and seafood, colorful and appetizing, realistic image."
+  },
+  {
+    "name": "Mutton Nasi Goreng",
+    "fileName": "mutton-nasi-goreng.jpg",
+    "prompt": "Mutton nasi goreng with pieces of mutton mixed into spiced rice, realistic photo."
+  },
+  {
+    "name": "Veg Noodles",
+    "fileName": "veg-noodles.jpg",
+    "prompt": "Stir fried veg noodles with colorful vegetables in a bowl, chopsticks on the side, realistic Asian food photo."
+  },
+  {
+    "name": "Egg Noodles",
+    "fileName": "egg-noodles.jpg",
+    "prompt": "Egg noodles with scrambled egg and vegetables, served on a plate, realistic restaurant style."
+  },
+  {
+    "name": "Chicken Noodles",
+    "fileName": "chicken-noodles.jpg",
+    "prompt": "Chicken stir fried noodles with sliced chicken pieces and vegetables, realistic photo."
+  },
+  {
+    "name": "Beef Noodles",
+    "fileName": "beef-noodles.jpg",
+    "prompt": "Beef noodles with thin beef strips, vegetables and sauce, in a bowl, realistic photography."
+  },
+  {
+    "name": "Seafood Noodles",
+    "fileName": "seafood-noodles.jpg",
+    "prompt": "Seafood noodles with prawns, squid and vegetables, steaming hot, realistic Asian food photo."
+  },
+  {
+    "name": "Mix Noodles",
+    "fileName": "mix-noodles.jpg",
+    "prompt": "Mixed meat noodles with chicken and seafood, colorful and glossy, realistic."
+  },
+  {
+    "name": "Mutton Noodles",
+    "fileName": "mutton-noodles.jpg",
+    "prompt": "Mutton noodles with sliced mutton pieces and vegetables, served in a bowl, realistic photograph."
+  },
+  {
+    "name": "Potato curry",
+    "fileName": "potato-curry.jpg",
+    "prompt": "A bowl of Sri Lankan style potato curry in yellow gravy, garnished with curry leaves, realistic."
+  },
+  {
+    "name": "Paneer masala",
+    "fileName": "paneer-masala.jpg",
+    "prompt": "Paneer butter masala style curry in a metal bowl, rich orange gravy with paneer cubes, realistic Indian food photo."
+  },
+  {
+    "name": "Chicken curry",
+    "fileName": "chicken-curry.jpg",
+    "prompt": "Sri Lankan chicken curry in a bowl with red spicy gravy, chicken pieces and curry leaves, realistic."
+  },
+  {
+    "name": "Beef curry",
+    "fileName": "beef-curry.jpg",
+    "prompt": "Beef curry in a dark rich gravy served in a small bowl, South Asian style, realistic photo."
+  },
+  {
+    "name": "Mutton curry",
+    "fileName": "mutton-curry.jpg",
+    "prompt": "Mutton curry with tender pieces in thick gravy, garnished with coriander, realistic food photograph."
+  },
+  {
+    "name": "Egg curry",
+    "fileName": "egg-curry.jpg",
+    "prompt": "Egg curry with boiled eggs in a spicy red gravy, served in a small bowl, realistic."
+  },
+  {
+    "name": "Plain omelet",
+    "fileName": "plain-omelet.jpg",
+    "prompt": "A simple plain omelet folded on a white plate with a small salad garnish, breakfast style, realistic."
+  },
+  {
+    "name": "Sri Lankan omelet",
+    "fileName": "sri-lankan-omelet.jpg",
+    "prompt": "Sri Lankan spiced omelet with onions and chillies, cut into wedges on a plate, realistic photo."
+  },
+  {
+    "name": "Special omelet",
+    "fileName": "special-omelet.jpg",
+    "prompt": "A loaded special omelet with vegetables and cheese, golden brown, served with toast, realistic."
+  },
+  {
+    "name": "Chicken 65",
+    "fileName": "chicken-65.jpg",
+    "prompt": "A plate of crispy red Chicken 65 pieces garnished with curry leaves and lemon wedges, South Indian starter, realistic restaurant photo."
+  },
+  {
+    "name": "French fries",
+    "fileName": "french-fries.jpg",
+    "prompt": "A basket of golden crispy French fries with ketchup on the side, fast food style, realistic."
+  },
+  {
+    "name": "Onion pakoda",
+    "fileName": "onion-pakoda.jpg",
+    "prompt": "A plate of crispy onion pakoda fritters served with green chutney, Indian snack, realistic photo."
+  },
+  {
+    "name": "Veg soup",
+    "fileName": "veg-soup.jpg",
+    "prompt": "A bowl of clear vegetable soup with visible carrots, peas and corn, served hot, realistic."
+  },
+  {
+    "name": "Chicken soup",
+    "fileName": "chicken-soup.jpg",
+    "prompt": "A comforting bowl of chicken soup with pieces of chicken and vegetables, steam rising, realistic photograph."
+  },
+  {
+    "name": "Mutton soup",
+    "fileName": "mutton-soup.jpg",
+    "prompt": "A hearty bowl of mutton soup with rich broth and meat pieces, served in a rustic bowl, realistic."
+  }
+]
+
+
