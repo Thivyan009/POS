@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
-import { CalendarIcon, Plus, Trash2, Edit } from "lucide-react"
+import { CalendarIcon, Plus, Trash2, Edit, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
   AlertDialog,
@@ -50,6 +50,9 @@ export default function CustomerManagement() {
     date_of_birth: undefined as Date | undefined,
   })
   const [deletingCustomerId, setDeletingCustomerId] = useState<string | null>(null)
+
+  const today = new Date()
+  const minDOB = new Date(1900, 0, 1)
 
   useEffect(() => {
     loadCustomers()
@@ -293,31 +296,50 @@ export default function CustomerManagement() {
 
             <div className="space-y-2">
               <Label>Date of Birth (Optional)</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !formData.date_of_birth && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.date_of_birth
-                      ? format(formData.date_of_birth, "PPP")
-                      : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={formData.date_of_birth}
-                    onSelect={(date) => setFormData({ ...formData, date_of_birth: date })}
-                    disabled={(date) => date > new Date()}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <div className="flex gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "flex-1 justify-start text-left font-normal",
+                        !formData.date_of_birth && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.date_of_birth
+                        ? format(formData.date_of_birth, "PPP")
+                        : "Select date of birth"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      captionLayout="dropdown"
+                      fromYear={minDOB.getFullYear()}
+                      toYear={today.getFullYear()}
+                      selected={formData.date_of_birth}
+                      onSelect={(date) => setFormData({ ...formData, date_of_birth: date })}
+                      disabled={(date) => date > today || date < minDOB}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label="Clear date of birth"
+                  disabled={!formData.date_of_birth}
+                  onClick={() => setFormData({ ...formData, date_of_birth: undefined })}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Used for birthday recognition and SMS (if enabled).
+              </p>
             </div>
           </div>
 

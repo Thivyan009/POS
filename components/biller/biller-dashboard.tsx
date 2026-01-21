@@ -141,16 +141,10 @@ export default function BillerDashboard() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Tax Collected</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Bills Count</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl sm:text-3xl font-bold text-foreground">
-              LKR{" "}
-              {stats.taxCollected.toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </p>
+            <p className="text-2xl sm:text-3xl font-bold text-foreground">{stats.billsCount}</p>
           </CardContent>
         </Card>
       </div>
@@ -197,12 +191,6 @@ export default function BillerDashboard() {
                         &middot; Discount:{" "}
                         LKR{" "}
                         {bill.discount.toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}{" "}
-                        &middot; Tax:{" "}
-                        LKR{" "}
-                        {bill.tax.toLocaleString("en-US", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}

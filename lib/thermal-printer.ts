@@ -102,9 +102,6 @@ export const ThermalPrinter = {
       const qty = item.quantity.toString()
       const price = `LKR ${(item.price * item.quantity).toFixed(2)}`
       receipt += itemName.padEnd(20) + qty.padStart(4) + price.padStart(12) + '\n'
-      if (item.tax) {
-        receipt += '  (Taxable)'.padEnd(36) + '\n'
-      }
     })
     
     receipt += '--------------------------------\n'
@@ -113,9 +110,6 @@ export const ThermalPrinter = {
     // Totals
     receipt += this.commands.ALIGN_RIGHT
     receipt += `Subtotal: LKR ${bill.subtotal.toFixed(2)}\n`
-    if (bill.tax > 0) {
-      receipt += `Tax (10%): LKR ${bill.tax.toFixed(2)}\n`
-    }
     if (bill.discount > 0) {
       receipt += `Discount: -LKR ${bill.discount.toFixed(2)}\n`
     }

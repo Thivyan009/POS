@@ -93,11 +93,6 @@ export default function BillDetailsDialog({
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
                             {item.name}
-                            {item.tax && (
-                              <Badge variant="outline" className="text-xs">
-                                Tax
-                              </Badge>
-                            )}
                           </div>
                         </TableCell>
                         <TableCell className="text-center">
@@ -121,10 +116,6 @@ export default function BillDetailsDialog({
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="font-medium">LKR {bill.subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Tax</span>
-                <span className="font-medium">LKR {bill.tax.toFixed(2)}</span>
               </div>
               {bill.discount > 0 && (
                 <div className="flex justify-between text-sm text-green-600 dark:text-green-400">

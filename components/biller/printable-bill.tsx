@@ -90,9 +90,6 @@ export default function PrintableBill({ bill, billId, createdAt }: PrintableBill
               <div key={item.id} className="item-row">
                 <div className="item-details">
                   <div className="item-name">{item.name}</div>
-                  {item.tax && (
-                    <div className="item-tax">(Taxable)</div>
-                  )}
                 </div>
                 <div className="item-qty">{item.quantity}</div>
                 <div className="item-total">LKR {itemTotal.toFixed(2)}</div>
@@ -110,12 +107,6 @@ export default function PrintableBill({ bill, billId, createdAt }: PrintableBill
             <span className="total-label">Subtotal:</span>
             <span className="total-value">LKR {bill.subtotal.toFixed(2)}</span>
           </div>
-          {bill.tax > 0 && (
-            <div className="total-row">
-              <span className="total-label">Tax (10%):</span>
-              <span className="total-value">LKR {bill.tax.toFixed(2)}</span>
-            </div>
-          )}
           {bill.discount > 0 && (
             <div className="total-row discount-row">
               <span className="total-label">Discount:</span>

@@ -18,8 +18,6 @@ interface Bill {
   total: number
 }
 
-const TAX_RATE = 0.1 // 10% tax
-
 export function useBillerState() {
   const [bill, setBill] = useState<Bill>(() => {
     // Restore bill from localStorage if it exists
@@ -43,13 +41,9 @@ export function useBillerState() {
 
   const calculateTotals = useCallback((items: BillItem[], discount: number) => {
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    const taxAmount = items.reduce((sum, item) => {
-      if (item.tax) {
-        return sum + item.price * item.quantity * TAX_RATE
-      }
-      return sum
-    }, 0)
-    const total = subtotal + taxAmount - discount
+    // Prices already include tax. Do not add tax on top of item amounts.
+    const taxAmount = 0
+    const total = subtotal - discount
 
     return {
       subtotal,

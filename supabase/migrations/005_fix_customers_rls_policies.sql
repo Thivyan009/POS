@@ -34,3 +34,7 @@ CREATE POLICY "Allow public delete access to customers"
 
 
 
+
+
+
+

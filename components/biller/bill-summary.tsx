@@ -42,7 +42,7 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
     try {
       const discountCode = await apiService.validateDiscountCode(discountCodeInput.trim())
       if (discountCode) {
-        const discountAmount = (bill.subtotal + bill.tax) * (discountCode.discountPercent / 100)
+        const discountAmount = bill.subtotal * (discountCode.discountPercent / 100)
         onApplyDiscount(discountAmount)
         setAppliedDiscountCode(discountCode)
         setDiscountCodeInput("")
@@ -167,10 +167,6 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
         <div className="flex justify-between text-xs sm:text-sm md:text-base">
           <span className="text-muted-foreground">Subtotal:</span>
           <span className="font-medium text-foreground">LKR {bill.subtotal.toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between text-xs sm:text-sm md:text-base">
-          <span className="text-muted-foreground">Tax:</span>
-          <span className="font-medium text-foreground">LKR {bill.tax.toFixed(2)}</span>
         </div>
         {bill.discount > 0 && (
           <div className="flex justify-between text-xs sm:text-sm md:text-base">

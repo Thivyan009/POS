@@ -162,14 +162,6 @@ export default function CustomerMenu({
                             {item.price.toFixed(2)}
                           </span>
                         </div>
-                        {item.tax && (
-                          <Badge
-                            variant="outline"
-                            className="text-xs px-2 py-0.5 border-muted-foreground/20 flex-shrink-0"
-                          >
-                            Tax incl.
-                          </Badge>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -206,19 +198,19 @@ export default function CustomerMenu({
             {/* Contact Info */}
             <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 md:gap-6 text-center sm:text-left">
               <a
-                href="tel:+94123456789"
+                href="tel:+94772748689"
                 className="flex items-center gap-2 text-xs sm:text-sm md:text-base text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                <span className="hidden sm:inline">+94 123 456 789</span>
+                <span className="hidden sm:inline">+94 77 274 8689</span>
                 <span className="sm:hidden">Call Us</span>
               </a>
               <a
-                href="mailto:info@restaurant.com"
+                href="mailto:paruthimunai@gmail.com"
                 className="flex items-center gap-2 text-xs sm:text-sm md:text-base text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Mail className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                <span className="hidden sm:inline">info@restaurant.com</span>
+                <span className="hidden sm:inline">paruthimunai@gmail.com</span>
                 <span className="sm:hidden">Email Us</span>
               </a>
             </div>
