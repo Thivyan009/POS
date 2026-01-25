@@ -392,12 +392,12 @@ export default function BillerLayout() {
             </div>
           </div>
 
-          {/* Mobile Bill Summary Button - Only visible on mobile */}
-          <div className="md:hidden fixed bottom-24 sm:bottom-28 left-0 right-0 px-3 sm:px-4 z-40">
+          {/* Mobile Bill Summary Button - Static above action bar */}
+          <div className="md:hidden border-t border-border bg-card px-3 sm:px-4 py-2">
             <Sheet>
               <SheetTrigger asChild>
                 <Button
-                  className="w-full bg-primary text-primary-foreground font-bold shadow-lg h-12 sm:h-14 text-sm sm:text-base"
+                  className="w-full bg-primary text-primary-foreground font-bold shadow-sm h-12 sm:h-14 text-sm sm:text-base"
                   size="lg"
                 >
                   <span className="flex items-center justify-center gap-2">
@@ -413,7 +413,7 @@ export default function BillerLayout() {
                   </span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="bottom" className="h-[85vh] p-0 max-h-[85vh]">
+              <SheetContent side="bottom" className="h-[85vh] p-0 max-h-[85vh] overflow-hidden">
                 <BillSummary
                   bill={bill}
                   onRemoveItem={removeItem}

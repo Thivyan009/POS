@@ -75,7 +75,7 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
   }
 
   return (
-    <div className="flex w-full flex-col bg-card border-l border-border h-full">
+    <div className="flex w-full flex-col bg-card border-l border-border h-full overflow-hidden">
       <div className="p-3 sm:p-4 md:p-5 border-b border-border flex-shrink-0">
         <h2 className="text-base sm:text-lg md:text-xl font-bold text-foreground">Bill Summary</h2>
       </div>
@@ -114,7 +114,7 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
       )}
 
       {/* Items List */}
-      <ScrollArea className="flex-1 p-2 sm:p-4 md:p-5">
+      <ScrollArea className="flex-1 p-2 sm:p-4 md:p-5 min-h-0">
         {bill.items.length === 0 ? (
           <div className="rounded-lg border border-dashed p-6 sm:p-8 md:p-10 text-center">
             <p className="text-muted-foreground text-sm md:text-base">No items added</p>
@@ -180,9 +180,10 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
         </div>
       </div>
 
-      {/* Discount Code Input */}
-      {bill.items.length > 0 && (
-        <div className="p-3 sm:p-4 md:p-5 border-t border-border flex-shrink-0 space-y-2 md:space-y-3">
+      {/* Discount Code Input - Always show when there are items */}
+      {bill.items && bill.items.length > 0 && (
+        <div className="p-3 sm:p-4 md:p-5 border-t border-border flex-shrink-0 space-y-2 md:space-y-3 bg-card">
+          <div className="text-xs sm:text-sm font-medium text-foreground mb-2">Discount</div>
           {appliedDiscountCode ? (
             <div className="flex items-center justify-between p-2 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
               <div className="flex items-center gap-2">

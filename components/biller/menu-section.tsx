@@ -26,7 +26,7 @@ export default function MenuSection({
   onSearchChange,
 }: MenuSectionProps) {
   return (
-    <div className="flex flex-1 flex-col border-r border-border p-2 sm:p-4 md:p-6 w-full min-w-0">
+    <div className="flex flex-1 flex-col border-r border-border p-2 sm:p-4 md:p-6 w-full min-w-0 overflow-hidden">
       {/* Search Bar */}
       <div className="mb-3 sm:mb-4 md:mb-5 flex-shrink-0">
         <div className="relative">
@@ -69,7 +69,7 @@ export default function MenuSection({
       </div>
 
       {/* Menu Items Grid */}
-      <ScrollArea className="flex-1 w-full min-w-0">
+      <ScrollArea className="flex-1 w-full min-w-0 min-h-0">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full min-h-[200px] p-4 text-center">
             <SearchIcon className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />

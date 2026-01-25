@@ -134,6 +134,13 @@
     display: none;
   }
   
+  /* Improve mobile scrolling for ScrollArea */
+  [data-slot="scroll-area-viewport"] {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
   /* Prevent text selection on mobile for better UX */
   @media (max-width: 640px) {
     button, [role="button"] {

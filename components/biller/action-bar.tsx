@@ -21,7 +21,7 @@ export default function ActionBar({ bill, onSubmit, onCancel, onPreview, isSubmi
   }
 
   return (
-    <div className="border-t border-border bg-card p-2 sm:p-4 md:p-5 pb-20 sm:pb-4 md:pb-5" onKeyDown={handleKeyDown}>
+    <div className="border-t border-border bg-card p-2 sm:p-4 md:p-5" onKeyDown={handleKeyDown}>
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 justify-end">
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
