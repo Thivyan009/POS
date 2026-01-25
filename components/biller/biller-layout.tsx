@@ -31,6 +31,7 @@ export default function BillerLayout() {
   const [categories, setCategories] = useState<any[]>([])
   const [items, setItems] = useState<any[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>("")
+  const [searchQuery, setSearchQuery] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
   const [isPrinting, setIsPrinting] = useState(false)
   const [printBillData, setPrintBillData] = useState<{ bill: any; billId?: string; createdAt?: string } | null>(null)
@@ -273,7 +274,17 @@ export default function BillerLayout() {
     )
   }
 
-  const filteredItems = selectedCategory ? items.filter((item) => item.categoryId === selectedCategory) : items
+  // Filter items: if searching, show all matching items across all categories
+  // Otherwise, filter by selected category
+  const filteredItems = items.filter((item) => {
+    if (searchQuery) {
+      // When searching, ignore category filter and search across all items
+      return item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    } else {
+      // When not searching, filter by selected category
+      return !selectedCategory || item.categoryId === selectedCategory
+    }
+  })
 
   // Show message if no categories or items
   if (categories.length === 0) {
@@ -363,6 +374,8 @@ export default function BillerLayout() {
                 selectedCategory={selectedCategory}
                 onSelectCategory={setSelectedCategory}
                 onAddItem={handleAddItem}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
               />
             </div>
 
