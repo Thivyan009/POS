@@ -192,8 +192,9 @@
     background: white;
     color: black;
     font-family: 'Courier New', monospace;
-    font-size: 10pt;
-    line-height: 1.4;
+    /* Increased base font size for better print readability */
+    font-size: 12pt;
+    line-height: 1.5;
   }
   
   .receipt-header {
@@ -227,7 +228,8 @@
   
   .receipt-info {
     margin-bottom: 12px;
-    font-size: 9pt;
+    /* Slightly larger to improve visibility of date/time and bill info */
+    font-size: 10pt;
   }
   
   .info-row {
@@ -258,7 +260,7 @@
     display: flex;
     justify-content: space-between;
     font-weight: bold;
-    font-size: 9pt;
+    font-size: 11pt;
     padding-bottom: 6px;
     border-bottom: 1px solid #000;
     margin-bottom: 8px;
@@ -284,7 +286,7 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 8px;
-    font-size: 9pt;
+    font-size: 11pt;
   }
   
   .item-details {
@@ -298,7 +300,7 @@
   }
   
   .item-tax {
-    font-size: 8pt;
+    font-size: 9pt;
     color: #666;
     margin-top: 2px;
   }
@@ -317,7 +319,7 @@
   
   .receipt-totals {
     margin-bottom: 16px;
-    font-size: 9pt;
+    font-size: 11pt;
   }
   
   .total-row {
@@ -343,7 +345,7 @@
     border-top: 2px solid #000;
     padding-top: 8px;
     margin-top: 8px;
-    font-size: 12pt;
+    font-size: 14pt;
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -361,7 +363,7 @@
   }
   
   .footer-text {
-    font-size: 11pt;
+    font-size: 12pt;
     font-weight: 600;
     color: #333;
     margin: 0;
