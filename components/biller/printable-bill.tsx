@@ -1,6 +1,6 @@
 "use client"
 
-import Image from "next/image"
+import { useState } from "react"
 
 interface PrintableBillProps {
   bill: {
@@ -21,6 +21,7 @@ interface PrintableBillProps {
 }
 
 export default function PrintableBill({ bill, billId, createdAt }: PrintableBillProps) {
+  const [logoError, setLogoError] = useState(false)
   const currentDate = createdAt ? new Date(createdAt) : new Date()
   const formattedDate = currentDate.toLocaleDateString("en-US", {
     year: "numeric",
@@ -38,19 +39,22 @@ export default function PrintableBill({ bill, billId, createdAt }: PrintableBill
         {/* Restaurant Logo and Header */}
         <div className="receipt-header">
           <div className="logo-container">
-            <Image
-              src="/restaurant-logo.png"
-              alt="Restaurant Logo"
-              width={80}
-              height={80}
-              className="restaurant-logo"
-              priority
-              onError={(e) => {
-                // Fallback if image fails to load
-                const target = e.target as HTMLImageElement
-                target.style.display = 'none'
-              }}
-            />
+            {logoError ? (
+              <div className="logo-placeholder">
+                <span className="logo-placeholder-text">Logo</span>
+                <span className="logo-placeholder-hint">Add restaurant-logo.png to /public</span>
+              </div>
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src="/restaurant-logo.png"
+                alt="Restaurant Logo"
+                width={80}
+                height={80}
+                className="restaurant-logo"
+                onError={() => setLogoError(true)}
+              />
+            )}
           </div>
           <h1 className="restaurant-name">Paruthimunai Restaurant</h1>
         </div>

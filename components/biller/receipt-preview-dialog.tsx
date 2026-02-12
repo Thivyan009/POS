@@ -78,12 +78,12 @@ export default function ReceiptPreviewDialog({
           useCORS: true,
           letterRendering: true,
           logging: false,
-          width: 302, // 80mm at 96 DPI ≈ 302px
-          windowWidth: 302,
+          width: 288, // 3in at 96 DPI = 288px
+          windowWidth: 288,
         },
         jsPDF: { 
           unit: 'mm', 
-          format: [80, estimatedHeight], // 80mm width, calculated height
+          format: [76.2, estimatedHeight], // 3 inches = 76.2mm width
           orientation: 'portrait',
         },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
@@ -106,7 +106,7 @@ export default function ReceiptPreviewDialog({
         <DialogHeader>
           <DialogTitle>Receipt Preview</DialogTitle>
           <DialogDescription>
-            Preview your receipt before printing. This is how it will look on 80mm thermal paper.
+            Preview your receipt before printing. This is how it will look on 3-inch thermal paper.
           </DialogDescription>
         </DialogHeader>
 
@@ -156,7 +156,7 @@ export default function ReceiptPreviewDialog({
             <p className="font-semibold mb-1">💡 Testing Tips:</p>
             <ul className="list-disc list-inside space-y-1 text-xs">
               <li>Click "Save as PDF" to download the receipt as a PDF file</li>
-              <li>The PDF will be formatted for 80mm (3.15") thermal paper</li>
+              <li>The PDF will be formatted for 3-inch thermal paper</li>
               <li>Click "Print Receipt" to print directly to your thermal printer</li>
               <li>When you have your printer, select "XP-E200L" in the print dialog</li>
             </ul>
