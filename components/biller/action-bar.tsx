@@ -7,13 +7,11 @@ import { Eye } from "lucide-react"
 
 interface ActionBarProps {
   bill: any
-  onSubmit: () => void
   onCancel: () => void
   onPreview?: () => void
-  isSubmitting?: boolean
 }
 
-export default function ActionBar({ bill, onSubmit, onCancel, onPreview, isSubmitting = false }: ActionBarProps) {
+export default function ActionBar({ bill, onCancel, onPreview }: ActionBarProps) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape" && bill.items.length > 0) {
       onCancel()
@@ -28,26 +26,17 @@ export default function ActionBar({ bill, onSubmit, onCancel, onPreview, isSubmi
           {onPreview && (
             <Button
               onClick={onPreview}
-              disabled={bill.items.length === 0 || isSubmitting}
+              disabled={bill.items.length === 0}
               variant="outline"
               className="w-full sm:min-w-[140px] md:min-w-[160px] h-10 sm:h-11 md:h-12 text-sm sm:text-base md:text-lg"
-              title="Preview receipt"
+              title="Preview receipt (print from preview)"
             >
               <Eye className="mr-2 h-4 w-4" />
               PREVIEW
             </Button>
           )}
           <Button
-            onClick={onSubmit}
-            disabled={bill.items.length === 0 || isSubmitting}
-            className="bg-green-600 hover:bg-green-700 text-white font-bold w-full sm:min-w-[140px] md:min-w-[160px] h-10 sm:h-11 md:h-12 text-sm sm:text-base md:text-lg"
-            title="Enter: Print"
-          >
-            {isSubmitting ? "Printing..." : "PRINT"}
-          </Button>
-          <Button
             onClick={onCancel}
-            disabled={isSubmitting}
             variant="destructive"
             className="w-full sm:min-w-[120px] md:min-w-[140px] font-bold h-10 sm:h-11 md:h-12 text-sm sm:text-base md:text-lg"
             title="Esc: Cancel"

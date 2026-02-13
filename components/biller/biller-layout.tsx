@@ -128,75 +128,6 @@ export default function BillerLayout() {
     setPreviewDialogOpen(true)
   }, [bill, toast])
 
-  const handlePrintClick = useCallback(async () => {
-    if (bill.items.length === 0) {
-      toast({
-        title: "Empty bill",
-        description: "Add items before printing",
-        variant: "destructive",
-      })
-      return
-    }
-
-    // Print bill directly - customer is optional
-    setIsPrinting(true)
-
-    try {
-      // Get current user for created_by field
-      const currentUser = getUser()
-      
-      // Submit bill (with or without customer)
-      const billData = {
-        items: bill.items,
-        subtotal: bill.subtotal,
-        tax: bill.tax,
-        discount: bill.discount,
-        total: bill.total,
-        customerId: selectedCustomerId || null,
-        createdBy: currentUser?.id || null,
-      }
-
-      const result = await apiService.createBill(billData)
-
-      // Set print data before printing
-      setPrintBillData({
-        bill: bill,
-        billId: result.id,
-        createdAt: result.createdAt || new Date().toISOString(),
-      })
-
-      // Print after receipt is in DOM and logo has time to load (avoids blank page)
-      setTimeout(() => {
-        try {
-          window.print?.()
-        } catch (printError) {
-          console.error("Print error:", printError)
-        }
-      }, 450)
-
-      toast({
-        title: "Bill completed",
-        description: `Bill #${result.id} successfully created`,
-      })
-
-      // Clear bill after print dialog has had time to open and complete
-      setTimeout(() => {
-        clearBill()
-        setPrintBillData(null)
-        setSelectedCustomerId(null)
-        setSelectedCustomerName(null)
-      }, 1500)
-    } catch (error) {
-      toast({
-        title: "Error submitting bill",
-        description: "Failed to create bill. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsPrinting(false)
-    }
-  }, [bill, toast, clearBill, getUser, selectedCustomerId])
-
   const handlePrintFromPreview = useCallback(async () => {
     if (!previewBillData) return
 
@@ -265,7 +196,7 @@ export default function BillerLayout() {
       // Show keyboard shortcuts help
       toast({
         title: "Keyboard Shortcuts",
-        description: "Esc: Cancel bill | Enter: Focus print button",
+        description: "Esc: Cancel bill. Use Preview to view and print receipt.",
       })
     },
   })
@@ -436,10 +367,8 @@ export default function BillerLayout() {
           {/* Bottom Action Bar */}
           <ActionBar
             bill={bill}
-            onSubmit={handlePrintClick}
             onCancel={clearBill}
             onPreview={handlePreviewClick}
-            isSubmitting={isPrinting}
           />
         </>
       ) : (
