@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { createPortal } from "react-dom"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/hooks/use-auth"
@@ -69,6 +70,14 @@ export default function BillerLayout() {
 
     loadMenu()
   }, [toast])
+
+  // When receipt is in portal for printing, give it full-size layout (invisible on screen) so print matches preview
+  useEffect(() => {
+    if (printBillData) {
+      document.body.classList.add("print-receipt-active")
+      return () => document.body.classList.remove("print-receipt-active")
+    }
+  }, [printBillData])
 
   const handleAddItem = useCallback(
     (item: any) => {
@@ -156,29 +165,27 @@ export default function BillerLayout() {
         createdAt: result.createdAt || new Date().toISOString(),
       })
 
-      // Print to thermal printer (XP-E200L 80mm)
-      // The receipt is formatted for 80mm thermal paper
-      // Select "XP-E200L" or your thermal printer in the print dialog
+      // Print after receipt is in DOM and logo has time to load (avoids blank page)
       setTimeout(() => {
         try {
           window.print?.()
         } catch (printError) {
           console.error("Print error:", printError)
         }
-      }, 150)
+      }, 450)
 
       toast({
         title: "Bill completed",
         description: `Bill #${result.id} successfully created`,
       })
 
-      // Clear bill after a short delay to allow print dialog to open
+      // Clear bill after print dialog has had time to open and complete
       setTimeout(() => {
         clearBill()
         setPrintBillData(null)
         setSelectedCustomerId(null)
         setSelectedCustomerName(null)
-      }, 500)
+      }, 1500)
     } catch (error) {
       toast({
         title: "Error submitting bill",
@@ -221,7 +228,7 @@ export default function BillerLayout() {
         } catch (printError) {
           console.error("Print error:", printError)
         }
-      }, 150)
+      }, 450)
 
       toast({
         title: "Bill completed",
@@ -235,7 +242,7 @@ export default function BillerLayout() {
         setPreviewDialogOpen(false)
         setSelectedCustomerId(null)
         setSelectedCustomerName(null)
-      }, 500)
+      }, 1500)
     } catch (error) {
       toast({
         title: "Error submitting bill",
@@ -475,14 +482,19 @@ export default function BillerLayout() {
         />
       )}
 
-      {/* Printable Bill Receipt - Hidden by default, shown only when printing */}
-      {printBillData && (
-        <PrintableBill
-          bill={printBillData.bill}
-          billId={printBillData.billId}
-          createdAt={printBillData.createdAt}
-        />
-      )}
+      {/* Printable Bill Receipt - Portal to body so print shows content; wrapper hidden on screen */}
+      {printBillData &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div className="print-receipt-portal">
+            <PrintableBill
+              bill={printBillData.bill}
+              billId={printBillData.billId}
+              createdAt={printBillData.createdAt}
+            />
+          </div>,
+          document.body
+        )}
     </div>
   )
 }

@@ -39,6 +39,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/restaurant-logo.png?v=2" />
         <link rel="icon" type="image/png" sizes="32x32" href="/restaurant-logo.png?v=2" />
         <link rel="icon" type="image/png" sizes="16x16" href="/restaurant-logo.png?v=2" />
+        <link rel="preload" href="/restaurant-logo.png" as="image" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         {children}

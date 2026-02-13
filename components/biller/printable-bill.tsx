@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 
 interface PrintableBillProps {
   bill: {
@@ -20,8 +20,15 @@ interface PrintableBillProps {
   createdAt?: string
 }
 
+// Absolute URL so the print engine can resolve the logo (avoids logo not printing)
+function getLogoSrc() {
+  if (typeof window === "undefined") return "/restaurant-logo.png"
+  return `${window.location.origin}/restaurant-logo.png`
+}
+
 export default function PrintableBill({ bill, billId, createdAt }: PrintableBillProps) {
   const [logoError, setLogoError] = useState(false)
+  const logoSrc = useMemo(getLogoSrc, [])
   const currentDate = createdAt ? new Date(createdAt) : new Date()
   const formattedDate = currentDate.toLocaleDateString("en-US", {
     year: "numeric",
@@ -47,7 +54,7 @@ export default function PrintableBill({ bill, billId, createdAt }: PrintableBill
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src="/restaurant-logo.png"
+                src={logoSrc}
                 alt="Restaurant Logo"
                 width={80}
                 height={80}
