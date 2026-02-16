@@ -24,6 +24,16 @@ export default function LoginPage() {
     emailInputRef.current?.focus()
   }, [])
 
+  // If already logged in, redirect to dashboard (e.g. user pressed back to login)
+  useEffect(() => {
+    const token = localStorage.getItem("pos-token")
+    const role = localStorage.getItem("pos-role")
+    if (token && role) {
+      if (role === "admin") router.replace("/admin/dashboard")
+      else if (role === "biller") router.replace("/biller")
+    }
+  }, [router])
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -97,11 +107,11 @@ export default function LoginPage() {
         description: `Welcome, ${user.email}!`,
       })
 
-      // Redirect based on role
+      // Redirect based on role (replace so back button doesn't return to login)
       if (user.role === "admin") {
-        router.push("/admin/dashboard")
+        router.replace("/admin/dashboard")
       } else {
-        router.push("/biller")
+        router.replace("/biller")
       }
     } catch (error: any) {
       console.error("Login error:", error)
