@@ -439,6 +439,14 @@
     margin: 0;
   }
 
+  /* Let receipt ancestors expand so content isn't clipped */
+  body.thermal-print-active [data-radix-portal],
+  body.thermal-print-active [role="dialog"] {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
   body.thermal-print-active * {
     visibility: hidden;
   }
@@ -448,15 +456,20 @@
     visibility: visible;
   }
 
+  /* Print root: full content height, no clipping (overrides flex-1 min-h-0 overflow-y-auto) */
   body.thermal-print-active .thermal-print-root {
     position: absolute !important;
     left: 0 !important;
     top: 0 !important;
     width: 80mm !important;
     max-width: 80mm !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: visible !important;
+    flex: none !important;
     background: white !important;
     box-shadow: none !important;
     border: none !important;
@@ -466,11 +479,22 @@
     display: block !important;
     padding: 0 !important;
     background: white !important;
+    overflow: visible !important;
+  }
+
+  /* Receipt and content: allow full height so totals + footer print */
+  body.thermal-print-active .thermal-print-root .printable-receipt {
+    display: block !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: auto !important;
   }
 
   body.thermal-print-active .thermal-print-root .thermal-receipt {
     width: 80mm !important;
     max-width: 80mm !important;
+    height: auto !important;
+    overflow: visible !important;
     box-shadow: none !important;
     border: none !important;
   }
