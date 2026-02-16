@@ -408,16 +408,19 @@ export default function CustomerDetailsDialog({
 
         <div className="flex justify-end gap-2">
           <Button
+            type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isSubmitting}
+            className="min-h-[44px] sm:min-h-0"
           >
             Cancel
           </Button>
           <Button
+            type="button"
             onClick={handleSubmit}
             disabled={isSubmitting || !phone.trim() || (isNewCustomer && !name.trim())}
-            className="min-w-[120px]"
+            className="min-w-[120px] min-h-[44px] sm:min-h-0"
           >
             {isSubmitting ? "Saving..." : "Add Customer"}
           </Button>

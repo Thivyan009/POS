@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { createPortal } from "react-dom"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/hooks/use-auth"
@@ -10,7 +9,6 @@ import { apiService } from "@/services/api-service"
 import MenuSection from "./menu-section"
 import BillSummary from "./bill-summary"
 import ActionBar from "./action-bar"
-import PrintableBill from "./printable-bill"
 import BillerDashboard from "./biller-dashboard"
 import ReceiptPreviewDialog from "./receipt-preview-dialog"
 import CustomerDetailsDialog from "./customer-details-dialog"
@@ -35,7 +33,6 @@ export default function BillerLayout() {
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
   const [isPrinting, setIsPrinting] = useState(false)
-  const [printBillData, setPrintBillData] = useState<{ bill: any; billId?: string; createdAt?: string } | null>(null)
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false)
   const [previewBillData, setPreviewBillData] = useState<{ bill: any; billId?: string; createdAt?: string } | null>(null)
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false)
@@ -70,14 +67,6 @@ export default function BillerLayout() {
 
     loadMenu()
   }, [toast])
-
-  // When receipt is in portal for printing, give it full-size layout (invisible on screen) so print matches preview
-  useEffect(() => {
-    if (printBillData) {
-      document.body.classList.add("print-receipt-active")
-      return () => document.body.classList.remove("print-receipt-active")
-    }
-  }, [printBillData])
 
   const handleAddItem = useCallback(
     (item: any) => {
@@ -134,7 +123,6 @@ export default function BillerLayout() {
     setIsPrinting(true)
     try {
       const currentUser = getUser()
-      
       const billData = {
         items: previewBillData.bill.items,
         subtotal: previewBillData.bill.subtotal,
@@ -147,19 +135,20 @@ export default function BillerLayout() {
 
       const result = await apiService.createBill(billData)
 
-      setPrintBillData({
+      // Update preview with real bill id so printed receipt shows correct number
+      setPreviewBillData({
         bill: previewBillData.bill,
         billId: result.id,
-        createdAt: result.createdAt || new Date().toISOString(),
+        createdAt: result.createdAt ?? new Date().toISOString(),
       })
 
-      setTimeout(() => {
-        try {
-          window.print?.()
-        } catch (printError) {
-          console.error("Print error:", printError)
-        }
-      }, 450)
+      // Let React render the updated receipt, then open print dialog (only receipt is visible via @media print)
+      await new Promise((r) => setTimeout(r, 300))
+      try {
+        window.print()
+      } catch (printError) {
+        console.error("Print error:", printError)
+      }
 
       toast({
         title: "Bill completed",
@@ -168,7 +157,6 @@ export default function BillerLayout() {
 
       setTimeout(() => {
         clearBill()
-        setPrintBillData(null)
         setPreviewBillData(null)
         setPreviewDialogOpen(false)
         setSelectedCustomerId(null)
@@ -250,7 +238,7 @@ export default function BillerLayout() {
   return (
     <div className="flex h-screen flex-col bg-background">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border bg-card p-3 sm:p-4 md:p-5">
+      <div className="flex items-center justify-between border-b border-border bg-card p-3 sm:p-4 md:p-5 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
           <Image
             src="/restaurant-logo.png"
@@ -264,9 +252,10 @@ export default function BillerLayout() {
             <p className="text-xs sm:text-sm md:text-base text-muted-foreground hidden sm:block">Press ? for keyboard shortcuts</p>
           </div>
         </div>
-        <button 
-          onClick={logout} 
-          className="text-xs sm:text-sm md:text-base text-muted-foreground hover:text-foreground px-2 sm:px-3 md:px-4 py-1.5 md:py-2 whitespace-nowrap ml-2 rounded-md hover:bg-muted transition-colors"
+        <button
+          type="button"
+          onClick={logout}
+          className="text-xs sm:text-sm md:text-base text-muted-foreground hover:text-foreground px-2 sm:px-3 md:px-4 py-2 md:py-2 min-h-[44px] sm:min-h-0 whitespace-nowrap ml-2 rounded-md hover:bg-muted transition-colors touch-manipulation"
         >
           Logout
         </button>
@@ -394,12 +383,12 @@ export default function BillerLayout() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="flex justify-end">
-            <Button onClick={() => setBirthdayAlertOpen(false)}>Continue</Button>
+            <Button type="button" onClick={() => setBirthdayAlertOpen(false)} className="min-h-[44px] sm:min-h-0">Continue</Button>
           </div>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Receipt Preview Dialog */}
+      {/* Receipt Preview Dialog - Print uses @media print to show only receipt */}
       {previewBillData && (
         <ReceiptPreviewDialog
           open={previewDialogOpen}
@@ -408,22 +397,9 @@ export default function BillerLayout() {
           billId={previewBillData.billId}
           createdAt={previewBillData.createdAt}
           onPrint={handlePrintFromPreview}
+          isPrinting={isPrinting}
         />
       )}
-
-      {/* Printable Bill Receipt - Portal to body so print shows content; wrapper hidden on screen */}
-      {printBillData &&
-        typeof document !== "undefined" &&
-        createPortal(
-          <div className="print-receipt-portal">
-            <PrintableBill
-              bill={printBillData.bill}
-              billId={printBillData.billId}
-              createdAt={printBillData.createdAt}
-            />
-          </div>,
-          document.body
-        )}
     </div>
   )
 }

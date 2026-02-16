@@ -92,19 +92,21 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
                   <p className="text-xs text-muted-foreground">Customer added</p>
                 </div>
                 <Button
+                  type="button"
                   variant="ghost"
                   size="sm"
                   onClick={onAddCustomer}
-                  className="text-xs"
+                  className="text-xs min-h-[44px] sm:min-h-0 min-w-[44px] sm:min-w-0"
                 >
                   Change
                 </Button>
               </div>
             ) : (
               <Button
+                type="button"
                 variant="outline"
                 onClick={onAddCustomer}
-                className="w-full h-9 sm:h-10 text-sm"
+                className="w-full h-11 sm:h-10 text-sm min-h-[44px]"
               >
                 + Add Customer Details
               </Button>
@@ -135,24 +137,27 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
 
                 <div className="flex items-center gap-1 md:gap-2">
                   <button
+                    type="button"
                     onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                    className="h-8 w-8 sm:h-7 sm:w-7 md:h-8 md:w-8 rounded-md bg-background border border-border text-sm sm:text-xs md:text-sm font-bold hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+                    className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 h-10 w-10 sm:h-7 sm:w-7 md:h-8 md:w-8 rounded-md bg-background border border-border text-sm sm:text-xs md:text-sm font-bold hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 touch-manipulation"
                     disabled={item.quantity <= 1}
                   >
                     −
                   </button>
                   <span className="w-8 sm:w-8 md:w-10 text-center text-xs md:text-sm font-semibold">{item.quantity}</span>
                   <button
+                    type="button"
                     onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                    className="h-8 w-8 sm:h-7 sm:w-7 md:h-8 md:w-8 rounded-md bg-background border border-border text-sm sm:text-xs md:text-sm font-bold hover:bg-primary hover:text-primary-foreground transition-colors active:scale-95"
+                    className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 h-10 w-10 sm:h-7 sm:w-7 md:h-8 md:w-8 rounded-md bg-background border border-border text-sm sm:text-xs md:text-sm font-bold hover:bg-primary hover:text-primary-foreground transition-colors active:scale-95 touch-manipulation"
                   >
                     +
                   </button>
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => onRemoveItem(item.id)}
-                  className="text-xs md:text-sm text-destructive hover:text-destructive/80 font-semibold whitespace-nowrap ml-1 sm:ml-2 px-2 py-1 rounded hover:bg-destructive/10 transition-colors active:scale-95"
+                  className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 text-xs md:text-sm text-destructive hover:text-destructive/80 font-semibold whitespace-nowrap ml-1 sm:ml-2 px-3 py-2 sm:px-2 sm:py-1 rounded hover:bg-destructive/10 transition-colors active:scale-95 touch-manipulation"
                 >
                   Remove
                 </button>
@@ -200,9 +205,10 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
                 </div>
               </div>
               <Button
+                type="button"
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100"
+                className="h-6 w-6 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100"
                 onClick={handleRemoveDiscountCode}
               >
                 <XCircle className="h-4 w-4" />
@@ -224,10 +230,11 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
                 disabled={isValidatingCode}
               />
               <Button
+                type="button"
                 onClick={handleApplyDiscountCode}
                 size="sm"
                 variant="outline"
-                className="flex-shrink-0 text-sm md:text-base"
+                className="flex-shrink-0 text-sm md:text-base min-h-[44px] sm:min-h-0"
                 disabled={isValidatingCode || !discountCodeInput.trim()}
               >
                 {isValidatingCode ? "..." : "Apply"}
@@ -248,10 +255,11 @@ export default function BillSummary({ bill, onRemoveItem, onUpdateQuantity, onAp
               disabled={!!appliedDiscountCode}
             />
             <Button
+              type="button"
               onClick={handleApplyDiscount}
               size="sm"
               variant="outline"
-              className="flex-shrink-0 text-sm md:text-base"
+              className="flex-shrink-0 text-sm md:text-base min-h-[44px] sm:min-h-0"
               disabled={!!appliedDiscountCode}
             >
               Apply

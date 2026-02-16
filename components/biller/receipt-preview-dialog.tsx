@@ -30,7 +30,8 @@ interface ReceiptPreviewDialogProps {
   }
   billId?: string
   createdAt?: string
-  onPrint?: () => void
+  onPrint?: () => void | Promise<void>
+  isPrinting?: boolean
 }
 
 export default function ReceiptPreviewDialog({
@@ -40,17 +41,19 @@ export default function ReceiptPreviewDialog({
   billId,
   createdAt,
   onPrint,
+  isPrinting = false,
 }: ReceiptPreviewDialogProps) {
   const receiptRef = useRef<HTMLDivElement>(null)
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
     if (onPrint) {
-      onPrint()
+      await onPrint()
+      // Parent closes dialog after print and delay
     } else {
       window.print()
+      onOpenChange(false)
     }
-    onOpenChange(false)
   }
 
   const handleSaveAsPDF = async () => {
@@ -102,33 +105,39 @@ export default function ReceiptPreviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col overflow-hidden p-4 sm:p-6">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>Receipt Preview</DialogTitle>
           <DialogDescription>
             This is exactly how the receipt will print: 80mm width, variable height. What you see here is what you get.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4">
-          {/* Preview Container */}
-          <div className="receipt-preview-container" ref={receiptRef}>
+        <div className="flex flex-col flex-1 min-h-0 gap-4">
+          {/* Preview Container - scrollable on small screens */}
+          <div
+            className="receipt-preview-container receipt-print-area flex-1 min-h-0 overflow-y-auto overscroll-contain"
+            ref={receiptRef}
+          >
             <PrintableBill bill={bill} billId={billId} createdAt={createdAt} />
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap gap-3 justify-end pt-4 border-t">
+          {/* Action Buttons - always visible, adequate touch targets */}
+          <div className="flex flex-wrap gap-3 justify-end pt-4 border-t flex-shrink-0">
             <Button
+              type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              disabled={isPrinting}
             >
               <X className="mr-2 h-4 w-4" />
               Close
             </Button>
             <Button
+              type="button"
               variant="outline"
               onClick={handleSaveAsPDF}
-              disabled={isGeneratingPDF}
+              disabled={isGeneratingPDF || isPrinting}
             >
               {isGeneratingPDF ? (
                 <>
@@ -143,11 +152,22 @@ export default function ReceiptPreviewDialog({
               )}
             </Button>
             <Button
+              type="button"
               onClick={handlePrint}
               className="bg-green-600 hover:bg-green-700"
+              disabled={isPrinting}
             >
-              <Printer className="mr-2 h-4 w-4" />
-              Print Receipt
+              {isPrinting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Printing...
+                </>
+              ) : (
+                <>
+                  <Printer className="mr-2 h-4 w-4" />
+                  Print Receipt
+                </>
+              )}
             </Button>
           </div>
 

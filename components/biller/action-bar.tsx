@@ -25,10 +25,11 @@ export default function ActionBar({ bill, onCancel, onPreview }: ActionBarProps)
         <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
           {onPreview && (
             <Button
+              type="button"
               onClick={onPreview}
               disabled={bill.items.length === 0}
               variant="outline"
-              className="w-full sm:min-w-[140px] md:min-w-[160px] h-10 sm:h-11 md:h-12 text-sm sm:text-base md:text-lg"
+              className="w-full sm:min-w-[140px] md:min-w-[160px] h-11 min-h-[44px] sm:h-11 md:h-12 text-sm sm:text-base md:text-lg"
               title="Preview receipt (print from preview)"
             >
               <Eye className="mr-2 h-4 w-4" />
@@ -36,9 +37,10 @@ export default function ActionBar({ bill, onCancel, onPreview }: ActionBarProps)
             </Button>
           )}
           <Button
+            type="button"
             onClick={onCancel}
             variant="destructive"
-            className="w-full sm:min-w-[120px] md:min-w-[140px] font-bold h-10 sm:h-11 md:h-12 text-sm sm:text-base md:text-lg"
+            className="w-full sm:min-w-[120px] md:min-w-[140px] font-bold h-11 min-h-[44px] sm:h-11 md:h-12 text-sm sm:text-base md:text-lg"
             title="Esc: Cancel"
           >
             CANCEL

@@ -40,9 +40,10 @@ export default function MenuSection({
           />
           {searchQuery && (
             <Button
+              type="button"
               variant="ghost"
               size="icon"
-              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 hover:bg-muted"
+              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-9 w-9 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 hover:bg-muted"
               onClick={() => onSearchChange("")}
             >
               <X className="h-4 w-4" />
@@ -55,9 +56,10 @@ export default function MenuSection({
       <div className="mb-3 sm:mb-4 md:mb-5 flex gap-2 md:gap-3 overflow-x-auto pb-2 scrollbar-hide flex-shrink-0">
         {categories.map((category) => (
           <button
+            type="button"
             key={category.id}
             onClick={() => onSelectCategory(category.id)}
-            className={`whitespace-nowrap rounded-lg px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm md:text-base font-medium transition-colors flex-shrink-0 ${
+            className={`whitespace-nowrap rounded-lg px-3 sm:px-4 md:px-5 py-2.5 sm:py-2 md:py-2.5 min-h-[44px] sm:min-h-0 text-xs sm:text-sm md:text-base font-medium transition-colors flex-shrink-0 ${
               selectedCategory === category.id
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-secondary-foreground hover:bg-muted"
@@ -86,10 +88,11 @@ export default function MenuSection({
           <div className="grid gap-2 sm:gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 p-1 sm:p-2 w-full auto-rows-max">
             {items.map((item) => (
               <button
+                type="button"
                 key={item.id}
                 onClick={() => onAddItem(item)}
                 disabled={!item.available}
-                className={`w-full rounded-lg border overflow-hidden text-left transition-colors active:scale-95 ${
+                className={`w-full rounded-lg border overflow-hidden text-left transition-colors active:scale-95 min-h-[44px] sm:min-h-0 ${
                   item.available
                     ? "border-border bg-card hover:bg-muted cursor-pointer"
                     : "border-border/50 bg-muted text-muted-foreground opacity-50 cursor-not-allowed"

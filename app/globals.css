@@ -141,16 +141,21 @@
     overflow-x: hidden;
   }
   
+  /* Touch-friendly: remove 300ms delay and improve tap on all devices */
+  button, [role="button"], a[href], input[type="submit"], input[type="button"] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   /* Prevent text selection on mobile for better UX */
   @media (max-width: 640px) {
     button, [role="button"] {
-      -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
       user-select: none;
     }
   }
-  
-  /* Mobile-first touch targets */
+
+  /* Mobile-first touch targets (min 44px for accessibility) */
   @media (max-width: 640px) {
     button, a, [role="button"] {
       min-height: 44px;
@@ -426,77 +431,46 @@
     margin: 0;
   }
   
-  /* Portal wrapper: hidden on screen so receipt doesn't flash; shown only in print */
-  .print-receipt-portal {
-    position: fixed !important;
-    left: -9999px !important;
-    top: 0 !important;
-    width: 1px !important;
-    height: 1px !important;
-    overflow: hidden !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-  }
-
-  /* When about to print, portal gets full-size layout (still invisible) so printed output matches preview */
-  body.print-receipt-active .print-receipt-portal {
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    overflow: visible !important;
-  }
-  body.print-receipt-active .print-receipt-portal .printable-receipt {
-    display: block !important;
-  }
-  body.print-receipt-active .print-receipt-portal .thermal-receipt {
-    width: 80mm !important;
-    max-width: 80mm !important;
-  }
-
-  /* Print: 80mm width, variable height — matches preview exactly */
+  /* Print: 80mm width, variable height — only receipt-print-area (in preview dialog) is shown */
   @media print {
     @page {
       size: 80mm auto;
       margin: 0;
     }
-    
+
     /* Hide everything by default */
     body * {
       visibility: hidden;
     }
-    
-    /* Show portal and receipt when printing (portal is direct child of body) */
-    .print-receipt-portal,
-    .print-receipt-portal * {
+
+    /* Show only the receipt container and its contents (used by ReceiptPreviewDialog) */
+    .receipt-print-area,
+    .receipt-print-area * {
       visibility: visible !important;
     }
-    .print-receipt-portal {
+    .receipt-print-area {
       position: fixed !important;
       left: 0 !important;
       top: 0 !important;
       width: 100% !important;
       height: 100% !important;
       overflow: visible !important;
-    }
-    
-    /* Show only printable receipt when printing */
-    .printable-receipt {
-      display: block !important;
-      visibility: visible !important;
-      position: fixed !important;
-      left: 0 !important;
-      top: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: flex-start !important;
       background: white !important;
-      color: black !important;
       padding: 0 !important;
       margin: 0 !important;
       z-index: 9999 !important;
     }
-    
-    .printable-receipt * {
+    .receipt-print-area .printable-receipt {
+      display: block !important;
+      visibility: visible !important;
+      position: static !important;
+      width: auto !important;
+      height: auto !important;
+    }
+    .receipt-print-area .printable-receipt * {
       visibility: visible !important;
     }
     
