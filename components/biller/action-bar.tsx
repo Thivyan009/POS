@@ -30,7 +30,7 @@ export default function ActionBar({ bill, onCancel, onPreview }: ActionBarProps)
               disabled={bill.items.length === 0}
               variant="outline"
               className="w-full sm:min-w-[140px] md:min-w-[160px] h-11 min-h-[44px] sm:h-11 md:h-12 text-sm sm:text-base md:text-lg"
-              title="Preview receipt (print from preview)"
+              title="Preview receipt"
             >
               <Eye className="mr-2 h-4 w-4" />
               PREVIEW

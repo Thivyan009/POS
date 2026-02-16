@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import PrintableBill from "./printable-bill"
-import { Printer, Download, X, Loader2 } from "lucide-react"
+import { triggerThermalPrint } from "@/lib/thermal-print"
+import { Download, X, Loader2, Check, Printer } from "lucide-react"
 
 interface ReceiptPreviewDialogProps {
   open: boolean
@@ -30,8 +31,8 @@ interface ReceiptPreviewDialogProps {
   }
   billId?: string
   createdAt?: string
-  onPrint?: () => void | Promise<void>
-  isPrinting?: boolean
+  onComplete?: () => void | Promise<void>
+  isCompleting?: boolean
 }
 
 export default function ReceiptPreviewDialog({
@@ -40,20 +41,18 @@ export default function ReceiptPreviewDialog({
   bill,
   billId,
   createdAt,
-  onPrint,
-  isPrinting = false,
+  onComplete,
+  isCompleting = false,
 }: ReceiptPreviewDialogProps) {
   const receiptRef = useRef<HTMLDivElement>(null)
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
 
-  const handlePrint = async () => {
-    if (onPrint) {
-      await onPrint()
-      // Parent closes dialog after print and delay
-    } else {
-      window.print()
-      onOpenChange(false)
-    }
+  const handleComplete = async () => {
+    if (onComplete) await onComplete()
+  }
+
+  const handlePrint = () => {
+    triggerThermalPrint(receiptRef.current)
   }
 
   const handleSaveAsPDF = async () => {
@@ -95,9 +94,7 @@ export default function ReceiptPreviewDialog({
       await html2pdf().set(opt).from(element).save()
     } catch (error) {
       console.error("Error generating PDF:", error)
-      // Fallback to print dialog if PDF generation fails
-      alert("PDF generation failed. Opening print dialog instead.")
-      window.print()
+      alert("PDF generation failed. Please try again.")
     } finally {
       setIsGeneratingPDF(false)
     }
@@ -109,14 +106,14 @@ export default function ReceiptPreviewDialog({
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>Receipt Preview</DialogTitle>
           <DialogDescription>
-            This is exactly how the receipt will print. Same layout and content — default paper size (A4), full bill included.
+            Review the receipt below. Complete the bill to save it, or save as PDF.
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col flex-1 min-h-0 gap-4">
           {/* Preview Container - scrollable on small screens */}
           <div
-            className="receipt-preview-container receipt-print-area flex-1 min-h-0 overflow-y-auto overscroll-contain"
+            className="receipt-preview-container flex-1 min-h-0 overflow-y-auto overscroll-contain"
             ref={receiptRef}
           >
             <PrintableBill bill={bill} billId={billId} createdAt={createdAt} />
@@ -128,7 +125,7 @@ export default function ReceiptPreviewDialog({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              disabled={isPrinting}
+              disabled={isCompleting}
             >
               <X className="mr-2 h-4 w-4" />
               Close
@@ -136,8 +133,18 @@ export default function ReceiptPreviewDialog({
             <Button
               type="button"
               variant="outline"
+              onClick={handlePrint}
+              disabled={isCompleting}
+              title="Print to XP-Q809K or other 80mm thermal printer"
+            >
+              <Printer className="mr-2 h-4 w-4" />
+              Print
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
               onClick={handleSaveAsPDF}
-              disabled={isGeneratingPDF || isPrinting}
+              disabled={isGeneratingPDF || isCompleting}
             >
               {isGeneratingPDF ? (
                 <>
@@ -153,19 +160,19 @@ export default function ReceiptPreviewDialog({
             </Button>
             <Button
               type="button"
-              onClick={handlePrint}
+              onClick={handleComplete}
               className="bg-green-600 hover:bg-green-700"
-              disabled={isPrinting}
+              disabled={isCompleting}
             >
-              {isPrinting ? (
+              {isCompleting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Printing...
+                  Completing...
                 </>
               ) : (
                 <>
-                  <Printer className="mr-2 h-4 w-4" />
-                  Print Receipt
+                  <Check className="mr-2 h-4 w-4" />
+                  Complete bill
                 </>
               )}
             </Button>
@@ -173,11 +180,10 @@ export default function ReceiptPreviewDialog({
 
           {/* Help Text */}
           <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
-            <p className="font-semibold mb-1">💡 Print format</p>
+            <p className="font-semibold mb-1">💡 Receipt</p>
             <ul className="list-disc list-inside space-y-1 text-xs">
-              <li>Prints on <strong>default paper size</strong> (A4) — full bill, nothing cut off</li>
-              <li>Printed receipt matches this preview exactly</li>
-              <li>Save as PDF uses the same layout</li>
+              <li>Print to send to XP-Q809K (80mm thermal) or Save as PDF</li>
+              <li>Complete bill to save the order and close</li>
             </ul>
           </div>
         </div>

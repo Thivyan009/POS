@@ -32,7 +32,7 @@ export default function BillerLayout() {
   const [selectedCategory, setSelectedCategory] = useState<string>("")
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
-  const [isPrinting, setIsPrinting] = useState(false)
+  const [isCompleting, setIsCompleting] = useState(false)
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false)
   const [previewBillData, setPreviewBillData] = useState<{ bill: any; billId?: string; createdAt?: string } | null>(null)
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false)
@@ -117,10 +117,10 @@ export default function BillerLayout() {
     setPreviewDialogOpen(true)
   }, [bill, toast])
 
-  const handlePrintFromPreview = useCallback(async () => {
+  const handleCompleteFromPreview = useCallback(async () => {
     if (!previewBillData) return
 
-    setIsPrinting(true)
+    setIsCompleting(true)
     try {
       const currentUser = getUser()
       const billData = {
@@ -135,33 +135,16 @@ export default function BillerLayout() {
 
       const result = await apiService.createBill(billData)
 
-      // Update preview with real bill id so printed receipt shows correct number
-      setPreviewBillData({
-        bill: previewBillData.bill,
-        billId: result.id,
-        createdAt: result.createdAt ?? new Date().toISOString(),
-      })
-
-      // Let React render the updated receipt, then open print dialog (only receipt is visible via @media print)
-      await new Promise((r) => setTimeout(r, 300))
-      try {
-        window.print()
-      } catch (printError) {
-        console.error("Print error:", printError)
-      }
-
       toast({
         title: "Bill completed",
         description: `Bill #${result.id} successfully created`,
       })
 
-      setTimeout(() => {
-        clearBill()
-        setPreviewBillData(null)
-        setPreviewDialogOpen(false)
-        setSelectedCustomerId(null)
-        setSelectedCustomerName(null)
-      }, 1500)
+      clearBill()
+      setPreviewBillData(null)
+      setPreviewDialogOpen(false)
+      setSelectedCustomerId(null)
+      setSelectedCustomerName(null)
     } catch (error) {
       toast({
         title: "Error submitting bill",
@@ -169,7 +152,7 @@ export default function BillerLayout() {
         variant: "destructive",
       })
     } finally {
-      setIsPrinting(false)
+      setIsCompleting(false)
     }
   }, [previewBillData, toast, clearBill, getUser, selectedCustomerId])
 
@@ -184,7 +167,7 @@ export default function BillerLayout() {
       // Show keyboard shortcuts help
       toast({
         title: "Keyboard Shortcuts",
-        description: "Esc: Cancel bill. Use Preview to view and print receipt.",
+        description: "Esc: Cancel bill. Use Preview to view receipt and complete.",
       })
     },
   })
@@ -388,7 +371,7 @@ export default function BillerLayout() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Receipt Preview Dialog - Print uses @media print to show only receipt */}
+      {/* Receipt Preview Dialog */}
       {previewBillData && (
         <ReceiptPreviewDialog
           open={previewDialogOpen}
@@ -396,8 +379,8 @@ export default function BillerLayout() {
           bill={previewBillData.bill}
           billId={previewBillData.billId}
           createdAt={previewBillData.createdAt}
-          onPrint={handlePrintFromPreview}
-          isPrinting={isPrinting}
+          onComplete={handleCompleteFromPreview}
+          isCompleting={isCompleting}
         />
       )}
     </div>
