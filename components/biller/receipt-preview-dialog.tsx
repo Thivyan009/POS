@@ -109,7 +109,7 @@ export default function ReceiptPreviewDialog({
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>Receipt Preview</DialogTitle>
           <DialogDescription>
-            This is exactly how the receipt will print: 80mm width, variable height. What you see here is what you get.
+            This is exactly how the receipt will print. Same layout and content — default paper size (A4), full bill included.
           </DialogDescription>
         </DialogHeader>
 
@@ -175,10 +175,9 @@ export default function ReceiptPreviewDialog({
           <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
             <p className="font-semibold mb-1">💡 Print format</p>
             <ul className="list-disc list-inside space-y-1 text-xs">
-              <li><strong>80mm width</strong>, variable height (one continuous strip)</li>
-              <li>Print output matches this preview exactly</li>
-              <li>Save as PDF uses the same 80mm width</li>
-              <li>In the print dialog, use 100% scale and avoid “Fit to page”</li>
+              <li>Prints on <strong>default paper size</strong> (A4) — full bill, nothing cut off</li>
+              <li>Printed receipt matches this preview exactly</li>
+              <li>Save as PDF uses the same layout</li>
             </ul>
           </div>
         </div>
